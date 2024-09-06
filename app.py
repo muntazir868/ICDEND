@@ -19,7 +19,7 @@ app.logger.setLevel(logging.INFO)
 
 # Initialize MongoDB client and access the Project1 database
 try:
-    mongo_db = MongoDB('mongodb://172.16.105.132:27017/', 'Project1')
+    mongo_db = MongoDB('mongodb://172.16.105.132:27017/', 'ExpertSystem')
     rulebase_app = RulebaseApp(mongo_db)
     lab_input_user_values_collection = mongo_db.get_collection('Lab_Input_User_Values')
 except Exception as e:
