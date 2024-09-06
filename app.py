@@ -125,7 +125,7 @@ def rulebase():
 
     return render_template('rulebase.html')
 
-
+#new
 
 @app.route('/lab_values', methods=['GET', 'POST'])
 def lab_values():
