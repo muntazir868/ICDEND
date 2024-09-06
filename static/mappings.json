@@ -1421,5 +1421,16 @@
             "iu/l",
             null
         ]
+    },
+    "EGFR": {
+        "names": [
+            "Chronic Kidney Disease"
+        ],
+        "units": [
+            "ml/min",
+            "m2",
+            null
+        ]
     }
+    
 }
