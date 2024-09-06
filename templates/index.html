@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Expert System for Diagnosis Confirmation</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Expert System for Diagnosis Confirmation using Lab Results">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="author" content="Team 9">
+  <meta name="generator" content="Custom Expert System">
+  
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon-32x32.png" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/static/plugins/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/plugins/icofont/icofont.min.css">
+  <link rel="stylesheet" href="/static/plugins/slick-carousel/slick/slick.css">
+  <link rel="stylesheet" href="/static/plugins/slick-carousel/slick/slick-theme.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    #expert-system {
+      background: url('/static/images/bg-options.jpg') no-repeat center center/cover;
+      color: white;
+      padding: 50px 0;
+    }
+    #expert-system .btn-container a {
+      color: white;
+    }
+  </style>
+      <style>
+        .banner {
+            background: url('static/images/slider-bg-1.jpg') no-repeat center center/cover;
+            padding: 100px 0; /* Adjust padding as needed */
+            /* background-size:  000px; */
+            color: #05172b; /* Assuming the background is dark and text needs to be light */
+        }
+    </style>
+</head>
+
+<body id="top">
+<header>
+  <div class="header-top-bar">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <ul class="top-bar-info list-inline-item pl-0 mb-0">
+            <li class="list-inline-item"><a href="mailto:support@gmail.com"><i class="icofont-support-faq mr-2"></i>support@expert-system.com</a></li>
+            <li class="list-inline-item"><i class="icofont-location-pin mr-2"></i>Address: CureMD, Pakistan </li>
+          </ul>
+        </div>
+        <div class="col-lg-6">
+          <div class="text-lg-right top-right-bar mt-2 mt-lg-0">
+            <a href="tel:+23-345-67890">
+              <span>Call Now : </span>
+              <span class="h4">(042) 38852222</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="navbar navbar-expand-lg navigation" id="navbar">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/static/images/logo.png" alt="" class="img-fluid" style="width: 150px; height: auto;">
+      </a>
+      <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarmain"
+        aria-controls="navbarmain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="icofont-navigation-menu"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarmain">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/lab_values">Diagnose</a></li>
+          <li class="nav-item"><a class="nav-link" href="/rulebase">Add Rule</a></li>
+          <li class="nav-item"><a class="nav-link" href="/view_rulebase">View Rulebase</a></li>
+          <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+          <!-- <li class="nav-item"><a class="nav-link" href="service.html">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li> -->
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="banner">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 col-md-12 col-xl-7">
+        <div class="block">
+          <div class="divider mb-3"></div>
+          <span class="text-uppercase text-sm letter-spacing ">Your tool for precise medical coding</span>
+          <h1 class="mb-3 mt-3">Expert System for ICD-10 Diagnosis</h1>
+          
+          <p class="mb-4 pr-5">Automate the assignment of ICD-10 codes based on lab results and patient data.</p>
+          <div class="btn-container ">
+            <a href="#expert-system" class="btn btn-main-2 btn-icon btn-round-full">Get Started <i class="icofont-simple-right ml-2  "></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="expert-system" class="section appoinment">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 ">
+        <div class="appoinment-content">
+          <img src="/static/images/img-3.jpg" alt="" class="img-fluid">
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-10">
+        <div class="appointment-wrap mt-5 mt-lg-0 text-center">
+          <h2 class="mb-2 title-color">Select an Option</h2>
+          <p class="mb-4">Choose an action to proceed:</p>
+          <div class="row justify-content-center">
+            <div class="col-md-4">
+              <a href="/lab_values" class="btn btn-main btn-round-full btn-block">Diagnose</a>
+            </div>
+            <div class="col-md-4">
+              <a href="/rulebase" class="btn btn-main btn-round-full btn-block">Add Rule</a>
+            </div>
+            <div class="col-md-4">
+              <a href="view-rules.html" class="btn btn-main btn-round-full btn-block">View Rules</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer section gray-bg">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mr-auto col-sm-6">
+		<div class="widget mb-5 mb-lg-0">
+			<div class="logo mb-4">
+			  <img src="/static/images/logo.png" alt="" class="img-fluid" style="width: 150px; height: auto;">
+			</div>
+		  <!-- </div> -->
+		  
+          <p>Supporting precise medical coding with advanced technology.</p>
+          <ul class="list-inline footer-socials mt-4">
+            <li class="list-inline-item">
+              <a href="https://www.facebook.com/CureMD.HR/"><i class="icofont-facebook"></i></a>
+            </li>
+            <li class="list-inline-item">
+              <a href="https://twitter.com/CureMD/"><i class="icofont-twitter"></i></a>
+            </li>
+            <li class="list-inline-item">
+              <a href="https://www.linkedin.com/company/curemd/"><i class="icofont-linkedin"></i></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-6 col-sm-6">
+        <div class="widget mb-5 mb-lg-0">
+          <h4 class="text-capitalize mb-3">Quick Links</h4>
+          <div class="divider mb-4"></div>
+          <ul class="list-unstyled footer-menu lh-35">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/rulebase">Add Rule</a></li>
+            <li><a href="/lab_values">Diagnose</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="widget widget-contact mb-5 mb-lg-0">
+          <h4 class="text-capitalize mb-3">Get in Touch</h4>
+          <div class="divider mb-4"></div>
+          <div class="footer-contact-block mb-4">
+            <div class="icon d-flex align-items-center">
+              <i class="icofont-email mr-3"></i>
+              <span class="h6 mb-0">Support Available for 24/7</span>
+            </div>
+            <h4 class="mt-2"><a href="mailto:support@email.com">Support@expert-system.com</a></h4>
+          </div>
+          <div class="footer-contact-block">
+            <div class="icon d-flex align-items-center">
+              <i class="icofont-support mr-3"></i>
+              <span class="h6 mb-0">Mon to Fri : 08:30 - 18:00</span>
+            </div>
+            <h4 class="mt-2"><a href="tel:+23-345-67890">+23-456-6588</a></h4>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-btm py-4 mt-5">
+      <div class="row align-items-center justify-content-between">
+        <div class="col-lg-6">
+          <div class="copyright">
+            Copyright &copy; 2024, Designed &amp; Developed by <a href="#">Team 9</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="plugins/jquery/jquery.js"></script>
+<script src="plugins/bootstrap/bootstrap.min.js"></script>
+<script src="plugins/slick-carousel/slick/slick.min.js"></script>
+<script src="plugins/shuffle/shuffle.min.js"></script>
+<script src="js/script.js"></script>
+<script>
+  $(document).ready(function(){
+    $('a[href^="#"]').on('click', function(event) {
+      var target = $(this.getAttribute('href'));
+      if( target.length ) {
+        event.preventDefault();
+        $('html, body').stop().animate({
+          scrollTop: target.offset().top
+        }, 1000);
+      }
+    });
+  });
+</script>
+</body>
+</html>

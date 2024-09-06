@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon-32x32.png" />
+
+    <title>Lab Values Input</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="static/plugins/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="static/plugins/icofont/icofont.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    
+    <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        } */
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .form-group select, .form-group input {
+            flex: 2;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 30px;
+        }
+
+        .btn:hover {
+            background-color: #e74c3c;
+        }
+
+        .remove-button {
+            margin-left: 10px;
+            margin-bottom: 10px;
+            color: #e74c3c;
+            cursor: pointer;
+            display: none; /* Initially hidden */
+
+            
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+        .popup.success {
+            background-color: green;
+        }
+        .popup.error {
+            background-color: red;
+        }
+
+        .appoinment {
+            padding: 100px 0;
+            background: #f4f4f9;
+        }
+
+        .appoinment-content {
+            position: relative;
+        }
+
+        .appoinment-content img {
+            border-radius: 8px;
+        }
+
+        .appoinment-wrap {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .appoinment-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .appoinment-form .form-control {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .appoinment-form .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .appoinment-form .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .appoinment-form .btn:hover {
+            background-color: #0056b3;
+        }
+        table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-top-bar">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <ul class="top-bar-info list-inline-item pl-0 mb-0">
+                        <li class="list-inline-item"><a href="mailto:support@gmail.com"><i class="icofont-support-faq mr-2"></i>support@expert-system.com</a></li>
+                        <li class="list-inline-item"><i class="icofont-location-pin mr-2"></i>Address: CureMD, Pakistan </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-lg-right top-right-bar mt-2 mt-lg-0">
+                        <a href="tel:+23-345-67890">
+                            <span>Call Now : </span>
+                            <span class="h4">(042) 38852222</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navigation" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="/static/images/logo.png" alt="" class="img-fluid" style="width: 150px; height: auto;">
+            </a>
+            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarmain"
+                    aria-controls="navbarmain" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="icofont-navigation-menu"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarmain">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/rulebase">Add Rule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/view_rulebase">View Rulebase</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<section class="section appoinment">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="appoinment-wrap mt-5 mt-lg-0">
+                    <h2 class="mb-2 title-color">Lab Values Input</h2>
+                    <p class="mb-4">Enter the lab values for the patient.</p>
+                    <form id="lab-values-form" class="appoinment-form" method="post" action="#">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="patient-id">Patient ID</label>
+                                    <input type="text" name="patient-id" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="age">Age</label>
+                                    <input type="number" min="1" name="age" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="gender">Gender</label>
+                                    <select name="gender" class="form-control" required>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="lab-values-container">
+                                <div class="lab-value-group">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="parameter-name">Parameter Name</label>
+                                            <select name="parameter-name" class="parameter-name" required>
+                                                <!-- Options will be populated dynamically -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="value">Value</label>
+                                            <input type="number" step="0.01" name="value" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="unit">Unit</label>
+                                            <select name="unit" class="form-control unit" required>
+                                                <!-- Options will be populated dynamically -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="valid-until">Lab Value Valid Until</label>
+                                            <input type="date" name="valid-until" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="time-lab-value">Time of Lab Value</label>
+                                            <input type="date" name="time-lab-value" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <button type="button" class="btn remove-button" onclick="removeLabValue(this)">Remove</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn" onclick="addLabValue()">Add Another Lab Value</button>
+                                <button type="submit" class="btn">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="popup" class="popup"></div>
+<div id="results" class="appoinment-wrap mt-5 mt-lg-0"></div>
+
+<script src="plugins/jquery/jquery.js"></script>
+<script src="plugins/bootstrap/bootstrap.min.js"></script>
+<script src="js/script.js"></script>
+<script>
+    let mappings = {};
+
+    // Fetch mappings.json
+    fetch('/static/mappings.json')
+        .then(response => response.json())
+        .then(data => {
+            mappings = data;
+            initializeParametersAndUnits();
+        })
+        .catch(error => {
+            console.error('Error loading mappings.json', error);
+        });
+
+    function initializeParametersAndUnits() {
+        const parameterSelects = document.querySelectorAll('.parameter-name');
+        parameterSelects.forEach(parameterSelect => {
+            populateParameterSelect(parameterSelect);
+            parameterSelect.addEventListener('change', function () {
+                const unitSelect = this.closest('.lab-value-group').querySelector('.unit');
+                populateUnitSelect(unitSelect, this.value);
+            });
+        });
+    }
+
+    function populateParameterSelect(selectElement) {
+        selectElement.innerHTML = '';
+        const sortedKeys = Object.keys(mappings).sort();
+        sortedKeys.forEach(key => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.text = key;
+            selectElement.appendChild(option);
+        });
+    }
+
+    function populateUnitSelect(selectElement, parameter) {
+        selectElement.innerHTML = '';
+        if (mappings[parameter] && mappings[parameter].units) {
+            mappings[parameter].units.forEach(unit => {
+                if (unit !== null) {
+                    const option = document.createElement('option');
+                    option.value = unit;
+                    option.text = unit;
+                    selectElement.appendChild(option);
+                }
+            });
+        }
+    }
+
+    document.getElementById('lab-values-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(this);
+    fetch('/lab_values', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const popup = document.getElementById('popup');
+        popup.classList.add(data.status);
+        popup.textContent = data.message;
+        popup.style.display = 'block';
+        setTimeout(() => {
+            popup.style.display = 'none';
+            popup.classList.remove(data.status);
+        }, 3000);
+        displayResults(data.results);
+    })
+    .catch(error => {
+        const popup = document.getElementById('popup');
+        popup.classList.add('error');
+        popup.textContent = 'An error occurred. Please try again.';
+        popup.style.display = 'block';
+        setTimeout(() => {
+            popup.style.display = 'none';
+            popup.classList.remove('error');
+        }, 3000);
+    });
+});
+
+function addLabValue() {
+    const container = document.getElementById('lab-values-container');
+    const newGroup = document.createElement('div');
+    newGroup.classList.add('lab-value-group');
+    newGroup.innerHTML = `
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="parameter-name">Parameter Name</label>
+                <select name="parameter-name" class="parameter-name" required>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="value">Value</label>
+                <input type="number" step="0.01" name="value" class="form-control" required>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="unit">Unit</label>
+                <select name="unit" class="form-control unit" required>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="valid-until">Lab Value Valid Until</label>
+                <input type="date" name="valid-until" class="form-control" required>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+                <label for="time-lab-value">Time of Lab Value</label>
+                <input type="date" name="time-lab-value" class="form-control" required>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <button type="button" class="btn remove-button" onclick="removeLabValue(this)">Remove</button>
+        </div>
+    `;
+    container.appendChild(newGroup);
+    const parameterSelect = newGroup.querySelector('.parameter-name');
+    const unitSelect = newGroup.querySelector('.unit');
+    populateParameterSelect(parameterSelect);
+    parameterSelect.addEventListener('change', function () {
+        populateUnitSelect(unitSelect, this.value);
+    });
+
+    // Show the remove button for the new group
+    newGroup.querySelector('.remove-button').style.display = 'inline-block';
+
+    // Hide the remove button for the first group if it exists
+    if (container.children.length === 2) {
+        container.children[0].querySelector('.remove-button').style.display = 'none';
+    }
+}
+
+function removeLabValue(button) {
+    const container = document.getElementById('lab-values-container');
+    if (container.children.length > 1) {
+        button.closest('.lab-value-group').remove();
+    }
+
+    // Show the remove button for the first group if it exists
+    if (container.children.length === 1) {
+        container.querySelector('.remove-button').style.display = 'none';
+    }
+}
+
+function formatConditions(conditions) {
+    return conditions.map(condition => {
+        const ageRange = `${condition.age_min} to ${condition.age_max} years`;
+        const gender = condition.gender;
+        const parameter = condition.parameter;
+        let valueRange;
+
+        if (condition.type === 'range') {
+            valueRange = `${condition.min_value} to ${condition.max_value} ${condition.unit}`;
+        } else if (condition.type === 'comparison') {
+            valueRange = `${condition.operator} ${condition.comparison_value} ${condition.unit}`;
+        } else if (condition.type === 'time-dependent') {
+            valueRange = `${condition.operator} ${condition.comparison_time_value} ${condition.unit} over ${condition.time} days`;
+        } else {
+            valueRange = 'N/A';
+        }
+
+        return `Age: ${ageRange}, Gender: ${gender}, Parameter: ${parameter}, Value Range: ${valueRange}`;
+    }).join('; ');
+}
+
+function displayResults(results) {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '<h2 class="title-color">Results</h2>';
+
+    if (results.length === 0) {
+        resultsDiv.innerHTML += '<p>No disease match found.</p>';
+    } else {
+        // Create a table element
+        const table = document.createElement('table');
+        table.classList.add('table', 'table-bordered');
+
+        // Create table header
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        const headers = ['Category', 'Disease Code', 'Disease Name', 'Matching Rule'];
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Create table body
+        const tbody = document.createElement('tbody');
+        results.forEach(disease => {
+            const row = document.createElement('tr');
+
+            // Category
+            const categoryCell = document.createElement('td');
+            categoryCell.textContent = disease.category;
+            row.appendChild(categoryCell);
+
+            // Disease Code
+            const diseaseCodeCell = document.createElement('td');
+            diseaseCodeCell.textContent = disease.disease_code;
+            row.appendChild(diseaseCodeCell);
+
+            // Disease Name
+            const diseaseNameCell = document.createElement('td');
+            diseaseNameCell.textContent = disease.disease_name;
+            row.appendChild(diseaseNameCell);
+
+            // Matching Rule
+            const matchingRuleCell = document.createElement('td');
+            matchingRuleCell.textContent = formatConditions(disease.matching_rule.conditions);
+            row.appendChild(matchingRuleCell);
+
+            tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        // Append the table to the results div
+        resultsDiv.appendChild(table);
+    }
+
+}
+</script>
+
+<!--- Footer -->
+<footer class="footer section gray-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mr-auto col-sm-6">
+                <div class="widget mb-5 mb-lg-0">
+                    <div class="logo mb-4">
+                        <img src="/static/images/logo.png" alt="" class="img-fluid" style="width: 150px; height: auto;">
+                    </div>
+                    <p>Supporting precise medical coding with advanced technology.</p>
+                    <ul class="list-inline footer-socials mt-4">
+                        <li class="list-inline-item">
+                            <a href="https://www.facebook.com/CureMD.HR/"><i class="icofont-facebook"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://twitter.com/CureMD/"><i class="icofont-twitter"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://www.linkedin.com/company/curemd/"><i class="icofont-linkedin"></i></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-6 col-sm-6">
+                <div class="widget mb-5 mb-lg-0">
+                    <h4 class="text-capitalize mb-3">Quick Links</h4>
+                    <div class="divider mb-4"></div>
+                    <ul class="list-unstyled footer-menu lh-35">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/rulebase">Add Rule</a></li>
+                        <li><a href="/lab_values">Diagnose</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="widget widget-contact mb-5 mb-lg-0">
+                    <h4 class="text-capitalize mb-3">Get in Touch</h4>
+                    <div class="divider mb-4"></div>
+                    <div class="footer-contact-block mb-4">
+                        <div class="icon d-flex align-items-center">
+                            <i class="icofont-email mr-3"></i>
+                            <span class="h6 mb-0">Support Available for 24/7</span>
+                        </div>
+                        <h4 class="mt-2"><a href="mailto:support@email.com">Support@expert-system.com</a></h4>
+                    </div>
+                    <div class="footer-contact-block">
+                        <div class="icon d-flex align-items-center">
+                            <i class="icofont-support mr-3"></i>
+                            <span class="h6 mb-0">Mon to Fri : 08:30 - 18:00</span>
+                        </div>
+                        <h4 class="mt-2"><a href="tel:+23-345-67890">+23-456-6588</a></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-btm py-4 mt-5">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-lg-6">
+                    <div class="copyright">
+                        Copyright &copy; 2024, Designed &amp; Developed by <a href="#">Team 9</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="plugins/jquery/jquery.js"></script>
+<script src="plugins/bootstrap/bootstrap.min.js"></script>
+<script src="plugins/slick-carousel/slick/slick.min.js"></script>
+<script src="plugins/shuffle/shuffle.min.js"></script>
+<script src="js/script.js"></script>
+<script>
+    $(document).ready(function(){
+        $('a[href^="#"]').on('click', function(event) {
+            var target = $(this.getAttribute('href'));
+            if( target.length ) {
+                event.preventDefault();
+                $('html, body').stop().animate({
+                    scrollTop: target.offset().top
+                }, 1000);
+            }
+        });
+    });
+</script>
+</body>
+</html>
