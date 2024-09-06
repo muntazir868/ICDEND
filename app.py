@@ -6,10 +6,10 @@ from rulebaseapp import RulebaseApp
 from rule import Rule, RuleEntry
 from condition import Condition
 import datetime
-import logging
+import json
+import os
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
 
 app = Flask(__name__)
 
@@ -123,7 +123,17 @@ def rulebase():
             app.logger.error(f'Error adding data: {str(e)}')
             return jsonify({'status': 'error', 'message': f'Error adding data: {str(e)}'}), 500
 
-    return render_template('rulebase.html')
+    # Fetch mappings JSON
+    mappings_path = os.path.join(app.root_path, 'static', 'mappings.json')
+    icd_mappings_path = os.path.join(app.root_path, 'static', 'sortedIcdMappings.json')
+
+    with open(mappings_path, 'r') as mappings_file:
+        mappings = json.load(mappings_file)
+
+    with open(icd_mappings_path, 'r') as icd_mappings_file:
+        icd_mappings = json.load(icd_mappings_file)
+
+    return render_template('rulebase.html', mappings=mappings, icd_mappings=icd_mappings)
 
 #new
 
@@ -225,9 +235,6 @@ def delete_rule(disease_code):
     except Exception as e:
         app.logger.error(f"Error deleting rule: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    
-    
-
     
 if __name__ == '__main__':
     rules = rulebase_app.get_all_rules()
