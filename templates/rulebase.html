@@ -138,15 +138,17 @@
             </div>
             <!-- Disease Codes Section -->
             <div id="disease-codes">
-                <h4>Disease</h4>
+                <h4>Disease Codes</h4>
                 <div class="disease-code" id="disease-code-1">
                     <div class="form-group">
                         <label for="disease-name-1">Disease Name:</label>
-                        <input type="text" class="form-control" id="disease-name-1" name="disease_names[]" placeholder="Enter Disease Name" required>
+                        <input type="text" class="form-control disease-name" id="disease-name-1" name="disease_names[]" placeholder="Enter Disease Name" required>
                     </div>
                     <div class="form-group">
                         <label for="disease-code-1">Disease Code:</label>
-                        <input type="text" class="form-control" id="disease-code-1" name="disease_codes[]" placeholder="Enter Disease Code" required>
+                        <select class="form-control disease-code-dropdown" id="disease-code-1" name="disease_codes[]" required>
+                            <!-- Options will be populated dynamically -->
+                        </select>
                     </div>
                     <div class="center-buttons">
                         <button type="button" class="btn btn-danger remove-disease-code" style="display: none;">Remove Disease Code</button>
@@ -281,6 +283,7 @@ $(document).ready(function () {
     let conditionCount = {1: 1}; // Initialize condition count for the first rule
     let diseaseCodeCount = 1;
     let mappings = {};
+    let icdMappings = {};
 
     // Fetch mappings.json
     $.getJSON('/static/mappings.json', function(data) {
@@ -288,6 +291,13 @@ $(document).ready(function () {
         initializeParametersAndUnits();
     }).fail(function() {
         console.error('Error loading mappings.json');
+    });
+
+    // Fetch master_icd_mapper.json
+    $.getJSON('/static/master_icd_mapper.json', function(data) {
+        icdMappings = data;
+    }).fail(function() {
+        console.error('Error loading master_icd_mapper.json');
     });
 
     function initializeParametersAndUnits() {
@@ -381,11 +391,13 @@ $(document).ready(function () {
             <div class="disease-code" id="disease-code-${diseaseCodeCount}">
                 <div class="form-group">
                     <label for="disease-name-${diseaseCodeCount}">Disease Name:</label>
-                    <input type="text" class="form-control" id="disease-name-${diseaseCodeCount}" name="disease_names[]" placeholder="Enter Disease Name" required>
+                    <input type="text" class="form-control disease-name" id="disease-name-${diseaseCodeCount}" name="disease_names[]" placeholder="Enter Disease Name" required>
                 </div>
                 <div class="form-group">
                     <label for="disease-code-${diseaseCodeCount}">Disease Code:</label>
-                    <input type="text" class="form-control" id="disease-code-${diseaseCodeCount}" name="disease_codes[]" placeholder="Enter Disease Code" required>
+                    <select class="form-control disease-code-dropdown" id="disease-code-${diseaseCodeCount}" name="disease_codes[]" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
                 </div>
                 <div class="center-buttons">
                     <button type="button" class="btn btn-danger remove-disease-code" style="display: block;">Remove Disease Code</button>
@@ -571,7 +583,7 @@ $(document).ready(function () {
                     </div>
                     <div class="form-group flex-item">
                         <label for="age-min-${ruleId}-${conditionCount[ruleId]}">Age Range:</label>
-                        <input type="number" class="form-control age-min" id="age-min-${ruleId}-${conditionCount[ruleId]}" name="age_min[${ruleId}][]" placeholder="From Age" min="0" required>
+                                                <input type="number" class="form-control age-min" id="age-min-${ruleId}-${conditionCount[ruleId]}" name="age_min[${ruleId}][]" placeholder="From Age" min="0" required>
                     </div>
                     <div class="form-group flex-item">
                         <label for="age-max-${ruleId}-${conditionCount[ruleId]}">Age Range:</label>
@@ -607,81 +619,122 @@ $(document).ready(function () {
     });
 
     function updateConditionNumbers(ruleId) {
-    $(`#conditions-${ruleId} .condition-group`).each(function (index) {
-        const conditionNumber = index + 1;
-        $(this).attr('id', `condition-${ruleId}-${conditionNumber}`);
-        $(this).find('h6').text(`Condition ${conditionNumber}`);
-        $(this).find('.condition-type').attr('id', `condition-type-${ruleId}-${conditionNumber}`);
-        $(this).find('.parameter').attr('id', `parameter-${ruleId}-${conditionNumber}`);
-        $(this).find('.min-value').attr('id', `min-value-${ruleId}-${conditionNumber}`);
-        $(this).find('.max-value').attr('id', `max-value-${ruleId}-${conditionNumber}`);
-        $(this).find('.operator').attr('id', `operator-comparison-${ruleId}-${conditionNumber}`);
-        $(this).find('.comparison-value').attr('id', `value-comparison-${ruleId}-${conditionNumber}`);
-        $(this).find('.time-value').attr('id', `time-${ruleId}-${conditionNumber}`);
-        $(this).find('.unit').attr('id', `unit-${ruleId}-${conditionNumber}`);
-        $(this).find('.age-min').attr('id', `age-min-${ruleId}-${conditionNumber}`);
-        $(this).find('.age-max').attr('id', `age-max-${ruleId}-${conditionNumber}`);
-        $(this).find('.gender').attr('id', `gender-${ruleId}-${conditionNumber}`);
+        $(`#conditions-${ruleId} .condition-group`).each(function (index) {
+            const conditionNumber = index + 1;
+            $(this).attr('id', `condition-${ruleId}-${conditionNumber}`);
+            $(this).find('h6').text(`Condition ${conditionNumber}`);
+            $(this).find('.condition-type').attr('id', `condition-type-${ruleId}-${conditionNumber}`);
+            $(this).find('.parameter').attr('id', `parameter-${ruleId}-${conditionNumber}`);
+            $(this).find('.min-value').attr('id', `min-value-${ruleId}-${conditionNumber}`);
+            $(this).find('.max-value').attr('id', `max-value-${ruleId}-${conditionNumber}`);
+            $(this).find('.operator').attr('id', `operator-comparison-${ruleId}-${conditionNumber}`);
+            $(this).find('.comparison-value').attr('id', `value-comparison-${ruleId}-${conditionNumber}`);
+            $(this).find('.time-value').attr('id', `time-${ruleId}-${conditionNumber}`);
+            $(this).find('.unit').attr('id', `unit-${ruleId}-${conditionNumber}`);
+            $(this).find('.age-min').attr('id', `age-min-${ruleId}-${conditionNumber}`);
+            $(this).find('.age-max').attr('id', `age-max-${ruleId}-${conditionNumber}`);
+            $(this).find('.gender').attr('id', `gender-${ruleId}-${conditionNumber}`);
+        });
+        conditionCount[ruleId] = $(`#conditions-${ruleId} .condition-group`).length;
+    }
+
+    // Remove rule
+    $(document).on('click', '.remove-rule', function () {
+        const ruleGroup = $(this).closest('.rule-group');
+        const ruleId = ruleGroup.attr('id').split('-')[1];
+        delete conditionCount[ruleId];
+        ruleGroup.remove();
+        updateRuleNumbers();
+        updateRemoveButtons();
     });
-    conditionCount[ruleId] = $(`#conditions-${ruleId} .condition-group`).length;
-}
 
-// Remove rule
-$(document).on('click', '.remove-rule', function () {
-    const ruleGroup = $(this).closest('.rule-group');
-    const ruleId = ruleGroup.attr('id').split('-')[1];
-    delete conditionCount[ruleId];
-    ruleGroup.remove();
-    updateRuleNumbers();
-    updateRemoveButtons();
-});
+    function updateRuleNumbers() {
+        $('.rule-group').each(function (index) {
+            const ruleNumber = index + 1;
+            $(this).attr('id', `rule-${ruleNumber}`);
+            $(this).find('h5').text(`Rule ${ruleNumber}`);
+            $(this).find('.conditions').attr('id', `conditions-${ruleNumber}`);
+            $(this).find('.add-condition').attr('data-rule', ruleNumber);
+            $(this).find('.remove-rule').attr('id', `remove-rule-${ruleNumber}`);
+            updateConditionNumbers(ruleNumber);
+        });
+        ruleCount = $('.rule-group').length;
+    }
 
-function updateRuleNumbers() {
-    $('.rule-group').each(function (index) {
-        const ruleNumber = index + 1;
-        $(this).attr('id', `rule-${ruleNumber}`);
-        $(this).find('h5').text(`Rule ${ruleNumber}`);
-        $(this).find('.conditions').attr('id', `conditions-${ruleNumber}`);
-        $(this).find('.add-condition').attr('data-rule', ruleNumber);
-        $(this).find('.remove-rule').attr('id', `remove-rule-${ruleNumber}`);
-        updateConditionNumbers(ruleNumber);
+    // Remove disease code
+    $(document).on('click', '.remove-disease-code', function () {
+        $(this).closest('.disease-code').remove();
+        updateRemoveButtons();
     });
-    ruleCount = $('.rule-group').length;
-}
 
-// Remove disease code
-$(document).on('click', '.remove-disease-code', function () {
-    $(this).closest('.disease-code').remove();
-    updateRemoveButtons();
-});
+    function updateRemoveButtons() {
+        $('.remove-condition').each(function () {
+            if ($(this).closest('.conditions').find('.condition-group').length <= 1) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
 
-function updateRemoveButtons() {
-    $('.remove-condition').each(function () {
-        if ($(this).closest('.conditions').find('.condition-group').length <= 1) {
-            $(this).hide();
+        $('.remove-rule').each(function () {
+            if ($(this).closest('#rules').find('.rule-group').length <= 1) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+
+        $('.remove-disease-code').each(function () {
+            if ($(this).closest('#disease-codes').find('.disease-code').length <= 1) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    }
+
+    // Function to populate disease code dropdown based on disease name
+    function populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown) {
+        const diseaseName = diseaseNameInput.val().trim().toLowerCase();
+        diseaseCodeDropdown.empty();
+        if (diseaseName) {
+            const matchingCodes = Object.keys(icdMappings).filter(code => icdMappings[code].toLowerCase().includes(diseaseName));
+            if (matchingCodes.length > 0) {
+                matchingCodes.forEach(code => {
+                    diseaseCodeDropdown.append($('<option>', {
+                        value: code,
+                        text: `${code} - ${icdMappings[code]}`
+                    }));
+                });
+            } else {
+                diseaseCodeDropdown.append($('<option>', {
+                    value: '',
+                    text: 'No matching codes found'
+                }));
+            }
         } else {
-            $(this).show();
+            diseaseCodeDropdown.append($('<option>', {
+                value: '',
+                text: 'Enter disease name to see codes'
+            }));
         }
+    }
+
+    // Event listener for disease name input
+    $(document).on('input', '.disease-name', function () {
+        const diseaseNameInput = $(this);
+        const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
+        populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
     });
 
-    $('.remove-rule').each(function () {
-        if ($(this).closest('#rules').find('.rule-group').length <= 1) {
-            $(this).hide();
-        } else {
-            $(this).show();
-        }
+    // Initialize disease code dropdowns
+    $('.disease-name').each(function () {
+        const diseaseNameInput = $(this);
+        const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
+        populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
     });
 
-    $('.remove-disease-code').each(function () {
-        if ($(this).closest('#disease-codes').find('.disease-code').length <= 1) {
-            $(this).hide();
-        } else {
-            $(this).show();
-        }
-    });
-}
-
-initializeConditionFields();
+    initializeConditionFields();
 });
 </script>
 
