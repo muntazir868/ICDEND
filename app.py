@@ -129,4 +129,6 @@ def view_patient_data():
 
 if __name__ == '__main__':
     rules = rulebase_app.get_all_rules()
-    app.run(debug=True)
+
+
+app.run(host='0.0.0.0', port=5000, debug=True)#+
