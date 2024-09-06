@@ -5,7 +5,7 @@ import datetime
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-class Condition(ABC):
+class ConditionAnalyser(ABC):
     @abstractmethod
     def evaluate(self, patient_age, patient_gender, lab_values):
         pass
@@ -35,7 +35,7 @@ class Condition(ABC):
             'gender': self.gender
         }
 
-class RangeCondition(Condition):
+class RangeCondition(ConditionAnalyser):
     def __init__(self, condition_data):
         self.min_value = condition_data.get('min_value')
         self.max_value = condition_data.get('max_value')
@@ -46,15 +46,21 @@ class RangeCondition(Condition):
         self.gender = condition_data.get('gender')
 
     def evaluate(self, patient_age, patient_gender, lab_values):
+        logging.debug(f"Evaluating RangeCondition for patient age: {patient_age}, gender: {patient_gender}")
+        
         if not (self.age_min <= patient_age <= self.age_max):
+            logging.debug(f"Patient age {patient_age} is outside the range [{self.age_min}, {self.age_max}]")
             return False
         if self.gender != 'all' and self.gender != patient_gender:
+            logging.debug(f"Patient gender {patient_gender} does not match condition gender {self.gender}")
             return False
 
         for lab_value in lab_values:
             if lab_value['parameter_name'].lower() == self.parameter.lower() and lab_value['valid_until'] >= str(datetime.date.today()):
                 if self.min_value <= lab_value['value'] <= self.max_value:
+                    logging.debug(f"Condition met for parameter {self.parameter} with value {lab_value['value']}")
                     return True
+        logging.debug(f"Condition not met for parameter {self.parameter}")
         return False
 
     def to_dict(self):
@@ -65,7 +71,7 @@ class RangeCondition(Condition):
         })
         return data
 
-class ComparisonCondition(Condition):
+class ComparisonCondition(ConditionAnalyser):
     def __init__(self, condition_data):
         self.operator = condition_data.get('operator')
         self.comparison_value = condition_data.get('comparison_value')
@@ -76,15 +82,21 @@ class ComparisonCondition(Condition):
         self.gender = condition_data.get('gender')
 
     def evaluate(self, patient_age, patient_gender, lab_values):
+        logging.debug(f"Evaluating ComparisonCondition for patient age: {patient_age}, gender: {patient_gender}")
+        
         if not (self.age_min <= patient_age <= self.age_max):
+            logging.debug(f"Patient age {patient_age} is outside the range [{self.age_min}, {self.age_max}]")
             return False
         if self.gender != 'all' and self.gender != patient_gender:
+            logging.debug(f"Patient gender {patient_gender} does not match condition gender {self.gender}")
             return False
 
         for lab_value in lab_values:
             if lab_value['parameter_name'].lower() == self.parameter.lower() and lab_value['valid_until'] >= str(datetime.date.today()):
                 if self.compare_values(lab_value['value']):
+                    logging.debug(f"Condition met for parameter {self.parameter} with value {lab_value['value']}")
                     return True
+        logging.debug(f"Condition not met for parameter {self.parameter}")
         return False
 
     def compare_values(self, value):
@@ -108,7 +120,7 @@ class ComparisonCondition(Condition):
         })
         return data
 
-class TimeDependentCondition(Condition):
+class TimeDependentCondition(ConditionAnalyser):
     def __init__(self, condition_data):
         self.operator = condition_data.get('operator')
         self.comparison_time_value = condition_data.get('comparison_time_value')

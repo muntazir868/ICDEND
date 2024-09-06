@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Patient Data</h1>
+    <form method="POST">
+        <label for="patient_id">Search by Patient ID:</label>
+        <input type="text" id="patient_id" name="patient_id" required>
+        <button type="submit">Search</button>
+    </form>
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                <th>Patient ID</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Lab Values</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patient_data %}
+            <tr>
+                <td>{{ patient.patient_id }}</td>
+                <td>{{ patient.age }}</td>
+                <td>{{ patient.gender }}</td>
+                <td>
+                    <ul>
+                        {% for lab_value in patient.lab_values %}
+                        <li>
+                            Parameter: {{ lab_value.parameter_name }}, 
+                            Value: {{ lab_value.value }}, 
+                            Unit: {{ lab_value.unit }}, 
+                            Valid Until: {{ lab_value.valid_until }}, 
+                            Time: {{ lab_value.time }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
