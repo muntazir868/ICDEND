@@ -79,8 +79,6 @@
             color: #e74c3c;
             cursor: pointer;
             display: none; /* Initially hidden */
-
-            
         }
 
         .popup {
@@ -204,7 +202,9 @@ th {
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/rulebase">Add Rule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/lab_values">Diagnose</a></li>
                     <li class="nav-item"><a class="nav-link" href="/view_rulebase">View Rulebase</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/view_patient_data">Patient Data</a></li>
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                 </ul>
             </div>
@@ -244,11 +244,11 @@ th {
                                 </div>
                             </div>
                             <div id="lab-values-container">
-                                <div class="lab-value-group">
+                                <div class="lab-value-group row">
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label for="parameter-name">Parameter Name</label>
-                                            <select name="parameter-name" class="parameter-name" required>
+                                            <select name="parameter-name" class="parameter-name form-control" required>
                                                 <!-- Options will be populated dynamically -->
                                             </select>
                                         </div>
@@ -385,12 +385,12 @@ th {
 function addLabValue() {
     const container = document.getElementById('lab-values-container');
     const newGroup = document.createElement('div');
-    newGroup.classList.add('lab-value-group');
+    newGroup.classList.add('lab-value-group', 'row');
     newGroup.innerHTML = `
         <div class="col-lg-6">
             <div class="form-group">
                 <label for="parameter-name">Parameter Name</label>
-                <select name="parameter-name" class="parameter-name" required>
+                <select name="parameter-name" class="parameter-name form-control" required>
                     <!-- Options will be populated dynamically -->
                 </select>
             </div>
@@ -565,6 +565,7 @@ function displayResults(results) {
                         <li><a href="/">Home</a></li>
                         <li><a href="/about">About Us</a></li>
                         <li><a href="/rulebase">Add Rule</a></li>
+                        <li><a href="/view_patient_data">Patient Data</a></li>
                         <li><a href="/lab_values">Diagnose</a></li>
                     </ul>
                 </div>
