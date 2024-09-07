@@ -10,7 +10,7 @@ import logging
 import os
 import json
 
-
+# Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
@@ -29,24 +29,39 @@ except Exception as e:
     exit(1)
 
 class Controller:
+    """
+    Controller class that handles the routing and logic for the Flask application.
+    """
+
     @staticmethod
     @app.route('/')
     def index():
+        """
+        Renders the index page.
+        """
         return render_template('index.html')
 
     @staticmethod
     @app.route('/about')
     def about():
+        """
+        Renders the about page.
+        """
         return render_template('about.html')
 
     @staticmethod
     @app.route('/rulebase', methods=['GET', 'POST'])
     def rulebase():
+        """
+        Handles the rulebase page.
+        - GET: Renders the rulebase page with mappings and ICD mappings.
+        - POST: Saves the rulebase data and returns the result.
+        """
         if request.method == 'POST':
             result = db_manager.save_rulebase(request)
             return jsonify(result), 200 if result['status'] == 'success' else 500
 
-        # Fetch mappings JSON for GET request
+        # Fetch mappings JSON for GET request -- these are the mappings for the ICD names and their codes
         mappings_path = os.path.join(app.root_path, 'static', 'mappings.json')
         icd_mappings_path = os.path.join(app.root_path, 'static', 'sortedIcdMappings.json')
 
@@ -59,10 +74,14 @@ class Controller:
         return render_template('rulebase.html', mappings=mappings, icd_mappings=icd_mappings)
         
 
-
     @staticmethod
     @app.route('/lab_values', methods=['GET', 'POST'])
     def lab_values():
+        """
+        Handles the lab values page.
+        - GET: Renders the lab values page.
+        - POST: Saves the lab values data and returns the result.
+        """
         if request.method == 'POST':
             result = db_manager.save_lab_values(request)
             return jsonify(result), 200 if result['status'] == 'success' else 500
@@ -71,6 +90,9 @@ class Controller:
     @staticmethod
     @app.route('/view_rulebase', methods=['GET'])
     def view_rulebase():
+        """
+        Renders the view rulebase page with all rules fetched from the database.
+        """
         try:
             rules = rulebase_app.get_all_rules()
             return render_template('view_rulebase.html', rules=rules)
@@ -81,6 +103,9 @@ class Controller:
     @staticmethod
     @app.route('/delete_rule/<disease_code>', methods=['POST'])
     def delete_rule(disease_code):
+        """
+        Deletes a rule based on the disease code and redirects to the view rulebase page.
+        """
         try:
             rulebase_app.delete_rule(disease_code)
             return redirect(url_for('view_rulebase'))
@@ -92,6 +117,11 @@ class Controller:
 @staticmethod
 @app.route('/view_patient_data', methods=['GET', 'POST'])
 def view_patient_data():
+    """
+    Handles the view patient data page.
+    - GET: Renders the view patient data page with all patient data.
+    - POST: Searches for a specific patient by ID and renders the page with the found patient data.
+    """
     try:
         # Fetch all patient data from the User_Input_Lab_Values collection
         patient_data = list(lab_input_user_values_collection.find())
@@ -114,7 +144,11 @@ def view_patient_data():
                         else:
                             high = mid - 1
                     return None
-
+                
+                # Checks if the patient has already been entered in the database 
+                # if it has it appends the newly added lab values to the patients existing lab data
+                # binary search is being used to search through the patient data
+                
                 found_patient = binary_search(patient_data, patient_id)
                 if found_patient:
                     return render_template('view_patient_data.html', patient_data=[found_patient])
@@ -130,5 +164,4 @@ def view_patient_data():
 if __name__ == '__main__':
     rules = rulebase_app.get_all_rules()
 
-
-app.run(host='0.0.0.0', port=5000, debug=True)#+
+app.run(host='0.0.0.0', port=5000, debug=True)

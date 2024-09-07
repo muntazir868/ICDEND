@@ -10,14 +10,36 @@ import json
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class DatabaseManager:
+    """
+    Manages interactions with the MongoDB database for storing and retrieving rules and lab values.
+    """
+
     def __init__(self, uri, db_name):
+        """
+        Initializes the DatabaseManager with the MongoDB URI and database name.
+        
+        :param uri: MongoDB connection URI.
+        :param db_name: Name of the database to connect to.
+        """
         self.client = MongoClient(uri)
         self.db = self.client[db_name]
 
     def get_collection(self, collection_name):
+        """
+        Retrieves a collection from the database.
+        
+        :param collection_name: Name of the collection to retrieve.
+        :return: MongoDB collection object.
+        """
         return self.db[collection_name]
 
     def save_rulebase(self, request):
+        """
+        Saves the rulebase data from the request to the database.
+        
+        :param request: Flask request object containing form data.
+        :return: Dictionary indicating the status of the operation.
+        """
         try:
             disease_category = request.form.get('category')
             disease_names = request.form.getlist('disease_names[]')
@@ -98,18 +120,18 @@ class DatabaseManager:
                 )
                 self.save_rule(rule)
 
-
+            return {'status': 'success', 'message': 'Rulebase saved successfully!'}
         except Exception as e:
             current_app.logger.error(f'Error adding data: {str(e)}')
             return {'status': 'error', 'message': f'Error adding data: {str(e)}'}
-        
-
-
-
-
-
 
     def save_lab_values(self, request):
+        """
+        Saves the lab values data from the request to the database.
+        
+        :param request: Flask request object containing form data.
+        :return: Dictionary indicating the status of the operation.
+        """
         try:
             patient_id = request.form.get('patient-id')
             age = int(request.form.get('age'))
@@ -158,10 +180,23 @@ class DatabaseManager:
             return {'status': 'error', 'message': str(e)}
 
     def save_rule(self, rule):
+        """
+        Saves a rule to the database.
+        
+        :param rule: RuleAggregator object to be saved.
+        """
         collection = self.get_collection('Rulebase')
         collection.insert_one(rule.to_dict())
 
     def evaluate_lab_values(self, patient_age, patient_gender, lab_values):
+        """
+        Evaluates the lab values against all rules in the database.
+        
+        :param patient_age: Age of the patient.
+        :param patient_gender: Gender of the patient.
+        :param lab_values: List of lab values for the patient.
+        :return: List of matching diseases.
+        """
         try:
             rules = self.get_all_rules()
             logging.debug(f"Fetched {len(rules)} rules for evaluation")
@@ -194,5 +229,10 @@ class DatabaseManager:
             return []
 
     def get_all_rules(self):
+        """
+        Retrieves all rules from the database.
+        
+        :return: List of RuleAggregator objects.
+        """
         collection = self.get_collection('Rulebase')
         return [RuleAggregator.from_dict(rule) for rule in collection.find()]
