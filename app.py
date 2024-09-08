@@ -95,6 +95,8 @@ class Controller:
         """
         try:
             rules = rulebase_app.get_all_rules()
+            for rule in rules:
+                app.logger.debug(f"Rule: {rule}")
             return render_template('view_rulebase.html', rules=rules)
         except Exception as e:
             app.logger.error(f"Error fetching rules: {e}")
@@ -130,7 +132,7 @@ def view_patient_data():
         if request.method == 'POST':
             patient_id = request.form.get('patient_id')
             if patient_id:
-                # Perform binary search to find the patient
+                # Perform binary search to find the patient ID. 
                 def binary_search(arr, target):
                     low, high = 0, len(arr) - 1
                     while low <= high:
@@ -208,21 +210,21 @@ def update_rule(rule_id):
                 'type': conditions[condition_index],
                 'parameter': parameters[condition_index],
                 'unit': units[condition_index],
-                'age_min': age_min[condition_index],
-                'age_max': age_max[condition_index],
+                'age_min': int(age_min[condition_index]) if age_min[condition_index] else None,
+                'age_max': int(age_max[condition_index]) if age_max[condition_index] else None,
                 'gender': genders[condition_index]
             }
 
             if conditions[condition_index] == 'range':
-                condition['min_value'] = request.form.getlist(f'min_values[{rule_index}][]')[condition_index]
-                condition['max_value'] = request.form.getlist(f'max_values[{rule_index}][]')[condition_index]
+                condition['min_value'] = float(request.form.getlist(f'min_values[{rule_index}][]')[condition_index]) if request.form.getlist(f'min_values[{rule_index}][]')[condition_index] else None
+                condition['max_value'] = float(request.form.getlist(f'max_values[{rule_index}][]')[condition_index]) if request.form.getlist(f'max_values[{rule_index}][]')[condition_index] else None
             elif conditions[condition_index] == 'comparison':
                 condition['operator'] = request.form.getlist(f'operators[{rule_index}][]')[condition_index]
-                condition['comparison_value'] = request.form.getlist(f'comparison_values[{rule_index}][]')[condition_index]
+                condition['comparison_value'] = float(request.form.getlist(f'comparison_values[{rule_index}][]')[condition_index]) if request.form.getlist(f'comparison_values[{rule_index}][]')[condition_index] else None
             elif conditions[condition_index] == 'time-dependent':
                 condition['operator'] = request.form.getlist(f'operators[{rule_index}][]')[condition_index]
-                condition['comparison_time_value'] = request.form.getlist(f'comparison_time_values[{rule_index}][]')[condition_index]
-                condition['time'] = request.form.getlist(f'time_values[{rule_index}][]')[condition_index]
+                condition['comparison_time_value'] = float(request.form.getlist(f'comparison_time_values[{rule_index}][]')[condition_index]) if request.form.getlist(f'comparison_time_values[{rule_index}][]')[condition_index] else None
+                condition['time'] = int(request.form.getlist(f'time_values[{rule_index}][]')[condition_index]) if request.form.getlist(f'time_values[{rule_index}][]')[condition_index] else None
 
             rule_entry['conditions'].append(condition)
 
