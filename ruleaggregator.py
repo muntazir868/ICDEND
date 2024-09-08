@@ -5,7 +5,7 @@ class RuleAggregator:
     Aggregates rules for a specific disease category.
     """
 
-    def __init__(self, category, disease_name, disease_code, rules, _id=None, rule_id=None, conditions=None):
+    def __init__(self, category, disease_name, disease_code, rules, _id=None):
         """
         Initializes the RuleAggregator with the given parameters.
         
@@ -14,26 +14,12 @@ class RuleAggregator:
         :param disease_code: Code of the disease.
         :param rules: List of RuleEntry objects.
         :param _id: MongoDB ObjectId (optional).
-        :param rule_id: ID of the rule (optional).
-        :param conditions: List of conditions (optional).
         """
         self.category = category
         self.disease_name = disease_name
         self.disease_code = disease_code
         self.rules = rules
         self._id = _id
-        self.rule_id = rule_id
-        self.conditions = conditions if conditions is not None else []
-
-    def RuleEntry(self, rule_id, conditions):
-        """
-        Method to add a new rule entry to the aggregator.
-        
-        :param rule_id: ID of the rule.
-        :param conditions: Conditions associated with the rule.
-        """
-        self.rule_id = rule_id
-        self.conditions = conditions
 
     def to_dict(self):
         """
@@ -46,9 +32,7 @@ class RuleAggregator:
             'disease_name': self.disease_name,
             'disease_code': self.disease_code,
             'rules': [rule.to_dict() for rule in self.rules],
-            '_id': self._id,
-            'rule_id': self.rule_id,
-            'conditions': [condition.to_dict() for condition in self.conditions]
+            '_id': self._id
         }
 
     @classmethod
@@ -60,15 +44,12 @@ class RuleAggregator:
         :return: RuleAggregator instance.
         """
         rules = [RuleEntry.from_dict(rule_entry) for rule_entry in data.get('rules', [])]
-        conditions = [ConditionAnalyser.from_dict(condition) for condition in data.get('conditions', [])]
         return cls(
             category=data.get('category'),
             disease_name=data.get('disease_name'),
             disease_code=data.get('disease_code'),
             rules=rules,
-            _id=data.get('_id'),
-            rule_id=data.get('rule_id'),
-            conditions=conditions
+            _id=data.get('_id')
         )
 
 class RuleEntry:

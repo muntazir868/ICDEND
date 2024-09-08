@@ -207,8 +207,8 @@ class TimeDependentCondition(ConditionAnalyser):
         :param condition_data: Dictionary containing condition data.
         """
         self.operator = condition_data.get('operator')
-        self.comparison_time_value = condition_data.get('comparison_time_value')
-        self.time = condition_data.get('time')
+        self.comparison_time_value = float(condition_data.get('comparison_time_value'))
+        self.time = int(condition_data.get('time'))
         self.parameter = condition_data.get('parameter')
         self.unit = condition_data.get('unit')
         self.age_min = condition_data.get('age_min')
@@ -249,18 +249,20 @@ class TimeDependentCondition(ConditionAnalyser):
         for i in range(len(relevant_lab_values) - 1):
             for j in range(i + 1, len(relevant_lab_values)):
                 time_diff = (datetime.datetime.strptime(relevant_lab_values[j]['time'], '%Y-%m-%d') -
-                             datetime.datetime.strptime(relevant_lab_values[i]['time'], '%Y-%m-%d')).days
+                            datetime.datetime.strptime(relevant_lab_values[i]['time'], '%Y-%m-%d')).days
 
                 logging.debug(f"Comparing lab values at times {relevant_lab_values[i]['time']} and {relevant_lab_values[j]['time']}, time difference: {time_diff} days")
+                logging.debug(f"self.time type: {type(self.time)}, self.time value: {self.time}")
 
-                if time_diff >= int(self.time):
+                if time_diff >= self.time:
                     if self.compare_values(relevant_lab_values[i]['value']) and \
-                       self.compare_values(relevant_lab_values[j]['value']):
+                    self.compare_values(relevant_lab_values[j]['value']):
                         logging.debug("Time-dependent condition met")
                         return True
         logging.debug("Time-dependent condition not met")
         return False
-
+    
+    
     def compare_values(self, value):
         """
         Compares the given value with the comparison time value based on the operator.

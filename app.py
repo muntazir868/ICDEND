@@ -1,10 +1,8 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 import logging
 from bson import ObjectId
 from databasemanager import DatabaseManager
 from rulebaseapp import RulebaseApp
-from ruleaggregator import RuleAggregator, RuleEntry  # Updated import
-from conditionanalyser import ConditionAnalyser
 import datetime
 import logging
 import os
@@ -14,6 +12,9 @@ import json
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
+
+# Set a secret key for the session
+app.secret_key = 'your_secret_key_here'  # Replace with a unique and secret key
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -73,7 +74,6 @@ class Controller:
 
         return render_template('rulebase.html', mappings=mappings, icd_mappings=icd_mappings)
         
-
     @staticmethod
     @app.route('/lab_values', methods=['GET', 'POST'])
     def lab_values():
@@ -113,8 +113,6 @@ class Controller:
             app.logger.error(f"Error deleting rule: {e}")
             return jsonify({'status': 'error', 'message': str(e)}), 500
 
-
-@staticmethod
 @app.route('/view_patient_data', methods=['GET', 'POST'])
 def view_patient_data():
     """
@@ -145,10 +143,6 @@ def view_patient_data():
                             high = mid - 1
                     return None
                 
-                # Checks if the patient has already been entered in the database 
-                # if it has it appends the newly added lab values to the patients existing lab data
-                # binary search is being used to search through the patient data
-                
                 found_patient = binary_search(patient_data, patient_id)
                 if found_patient:
                     return render_template('view_patient_data.html', patient_data=[found_patient])
@@ -159,9 +153,89 @@ def view_patient_data():
     except Exception as e:
         app.logger.error(f"Error fetching patient data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
-        
+    
+@app.route('/edit_rule/<rule_id>', methods=['GET'])
+def edit_rule(rule_id):
+    rule = rulebase_app.get_rule_by_id(rule_id)
+    if rule:
+        # Fetch mappings JSON for GET request -- these are the mappings for the ICD names and their codes
+        mappings_path = os.path.join(app.root_path, 'static', 'mappings.json')
+        icd_mappings_path = os.path.join(app.root_path, 'static', 'sortedIcdMappings.json')
+
+        with open(mappings_path, 'r') as mappings_file:
+            mappings = json.load(mappings_file)
+
+        with open(icd_mappings_path, 'r') as icd_mappings_file:
+            icd_mappings = json.load(icd_mappings_file)
+
+        return render_template('edit_rule.html', rule=rule, mappings=mappings, icd_mappings=icd_mappings)
+    else:
+        flash('Rule not found', 'error')
+        return redirect(url_for('view_rulebase'))
+    
+@app.route('/update_rule/<rule_id>', methods=['POST'])
+def update_rule(rule_id):
+    rule = rulebase_app.get_rule_by_id(rule_id)
+    if not rule:
+        flash('Rule not found', 'error')
+        return redirect(url_for('view_rulebase'))
+
+    # Update the rule with the form data
+    rule.category = request.form['category']
+    rule.disease_codes = request.form.getlist('disease_codes[]')
+    rule.disease_names = request.form.getlist('disease_names[]')
+
+    # Clear existing rules and conditions
+    rule.rules = []
+
+    # Iterate over the rules and conditions
+    rule_count = len(request.form.getlist('conditions[1][]'))
+    for rule_index in range(1, rule_count + 1):
+        conditions = request.form.getlist(f'conditions[{rule_index}][]')
+        parameters = request.form.getlist(f'parameters[{rule_index}][]')
+        units = request.form.getlist(f'units[{rule_index}][]')
+        age_min = request.form.getlist(f'age_min[{rule_index}][]')
+        age_max = request.form.getlist(f'age_max[{rule_index}][]')
+        genders = request.form.getlist(f'genders[{rule_index}][]')
+
+        rule_entry = {
+            'conditions': [],
+            'rule_id': rule_index
+        }
+
+        for condition_index in range(len(conditions)):
+            condition = {
+                'type': conditions[condition_index],
+                'parameter': parameters[condition_index],
+                'unit': units[condition_index],
+                'age_min': age_min[condition_index],
+                'age_max': age_max[condition_index],
+                'gender': genders[condition_index]
+            }
+
+            if conditions[condition_index] == 'range':
+                condition['min_value'] = request.form.getlist(f'min_values[{rule_index}][]')[condition_index]
+                condition['max_value'] = request.form.getlist(f'max_values[{rule_index}][]')[condition_index]
+            elif conditions[condition_index] == 'comparison':
+                condition['operator'] = request.form.getlist(f'operators[{rule_index}][]')[condition_index]
+                condition['comparison_value'] = request.form.getlist(f'comparison_values[{rule_index}][]')[condition_index]
+            elif conditions[condition_index] == 'time-dependent':
+                condition['operator'] = request.form.getlist(f'operators[{rule_index}][]')[condition_index]
+                condition['comparison_time_value'] = request.form.getlist(f'comparison_time_values[{rule_index}][]')[condition_index]
+                condition['time'] = request.form.getlist(f'time_values[{rule_index}][]')[condition_index]
+
+            rule_entry['conditions'].append(condition)
+
+        rule.rules.append(rule_entry)
+
+    # Save the updated rule
+    result = rulebase_app.update_rule(rule_id, rule.category, rule.disease_names, rule.disease_codes, rule.rules)
+    if result['status'] == 'success':
+        flash('Rule updated successfully', 'success')
+    else:
+        flash('Failed to update rule', 'error')
+
+    return redirect(url_for('view_rulebase'))
 
 if __name__ == '__main__':
-    rules = rulebase_app.get_all_rules()
-
-app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
