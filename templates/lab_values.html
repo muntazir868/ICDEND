@@ -459,7 +459,7 @@ function formatConditions(conditions) {
             valueRange = `${condition.min_value} to ${condition.max_value} ${condition.unit}`;
         } else if (condition.type === 'comparison') {
             valueRange = `${condition.operator} ${condition.comparison_value} ${condition.unit}`;
-        } else if (condition.type === 'time-dependent') {
+        } else if (condition.type === 'time-dependent' || condition.type === 'timedependent') {
             console.log('Time-dependent condition:', condition); // Log the condition
             valueRange = `${condition.operator} ${condition.comparison_time_value} ${condition.unit} over ${condition.time} days`;
         } 

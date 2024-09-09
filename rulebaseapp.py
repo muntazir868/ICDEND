@@ -1,6 +1,7 @@
 from flask import current_app
 from bson import ObjectId
 from ruleaggregator import RuleAggregator
+from config import rules_data_collection
 
 class RulebaseApp:
     """
@@ -13,7 +14,7 @@ class RulebaseApp:
         
         :param db: DatabaseManager instance.
         """
-        self.collection = db.get_collection('Rulebase')
+        self.collection = db.get_collection(rules_data_collection)
 
     def save_rule(self, rule):
         """
@@ -23,18 +24,6 @@ class RulebaseApp:
         """
         current_app.logger.info(f'Saving rule: {rule}')
         self.collection.insert_one(rule.to_dict())
-
-    # def get_all_rules(self):
-    #     """
-    #     Retrieves all rules from the database.
-        
-    #     :return: List of RuleAggregator objects.
-    #     """
-    #     rules = []
-    #     for rule in self.collection.find():
-    #         rule['_id'] = str(rule['_id'])  # Convert ObjectId to string
-    #         rules.append(RuleAggregator.from_dict(rule))
-    #     return rules
     
     def get_all_rules(self):
         rules = self.collection.find()
@@ -72,7 +61,7 @@ class RulebaseApp:
                             'operator': condition.get('operator', None),
                             'comparison_value': condition.get('comparison_value', None)
                         })
-                    elif condition['type'] == 'time-dependent':
+                    elif condition['type'] in ['time-dependent', 'timedependent', 'TimeDependent', "Time Dependent Condition"]:
                         formatted_condition.update({
                             'operator': condition.get('operator', None),
                             'comparison_time_value': condition.get('comparison_time_value', None),

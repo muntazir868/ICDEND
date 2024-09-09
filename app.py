@@ -5,6 +5,7 @@ from rulebaseapp import RulebaseApp
 import logging
 import os
 import json
+from config import mongodb_link, secret_key,lab_values_collection
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -12,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 app = Flask(__name__)
 
 # Set a secret key for the session
-app.secret_key = 'your_secret_key_here'  # Replace with a unique and secret key
+app.secret_key = secret_key  # Replace with a unique and secret key
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -20,9 +21,9 @@ app.logger.setLevel(logging.INFO)
 
 # Initialize MongoDB client and access the Project1 database
 try:
-    db_manager = DatabaseManager('mongodb://172.16.105.132:27017/', 'ExpertSystem')
+    db_manager = DatabaseManager(mongodb_link, 'ExpertSystem')
     rulebase_app = RulebaseApp(db_manager)
-    lab_input_user_values_collection = db_manager.get_collection('User_Input_Lab_Values')
+    lab_input_user_values_collection = db_manager.get_collection(lab_values_collection)
 except Exception as e:
     app.logger.error(f"Error connecting to MongoDB: {e}")
     exit(1)

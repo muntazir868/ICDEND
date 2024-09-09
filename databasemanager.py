@@ -4,6 +4,8 @@ from ruleaggregator import RuleAggregator, RuleEntry
 from conditioncompiler import ConditionCompiler
 import logging
 from bson import ObjectId
+import config
+from config import lab_values_collection, rules_data_collection
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -14,6 +16,7 @@ class DatabaseManager:
         self.db = self.client[db_name]
 
     def get_collection(self, collection_name):
+        logging.debug(f"Getting collection: {collection_name}")
         return self.db[collection_name]
 
     def save_rulebase(self, request):
@@ -103,24 +106,38 @@ class DatabaseManager:
         except Exception as e:
             logging.error(f'Error adding data: {str(e)}')
             return {'status': 'error', 'message': f'Error adding data: {str(e)}'}
-
         
-
-
-
-
-
-
     def save_lab_values(self, request):
         try:
+            # Extract and validate patient_id
             patient_id = request.form.get('patient-id')
+            logging.debug(f"Received patient_id: {patient_id}, type: {type(patient_id)}")
+            if not isinstance(patient_id, str):
+                raise ValueError("patient-id must be a string")
+
+            # Extract and validate age
             age = int(request.form.get('age'))
+            logging.debug(f"Received age: {age}, type: {type(age)}")
+
+            # Extract and validate gender
             gender = request.form.get('gender')
+            logging.debug(f"Received gender: {gender}, type: {type(gender)}")
+            if not isinstance(gender, str):
+                raise ValueError("gender must be a string")
+
+            # Extract and validate parameters
             parameters = request.form.getlist('parameter-name')
+            logging.debug(f"Received parameters: {parameters}, types: {[type(param) for param in parameters]}")
+            if not all(isinstance(param, str) for param in parameters):
+                raise ValueError("parameter-name must be a list of strings")
+
+            # Extract other required fields
             values = request.form.getlist('value')
             units = request.form.getlist('unit')
             valid_untils = request.form.getlist('valid-until')
             times = request.form.getlist('time-lab-value')
+
+            # Prepare lab values data
             lab_values_data = []
             for i in range(len(parameters)):
                 lab_value_data = {
@@ -132,7 +149,11 @@ class DatabaseManager:
                 }
                 lab_values_data.append(lab_value_data)
 
-            collection = self.get_collection('User_Input_Lab_Values')
+            # Get the collection
+            collection = self.get_collection(lab_values_collection)  # Specify the correct collection name
+            logging.debug(f"Collection: {collection}")
+
+            # Check if the patient already exists
             existing_patient = collection.find_one({'patient_id': patient_id})
             if existing_patient:
                 collection.update_one(
@@ -148,8 +169,11 @@ class DatabaseManager:
                 }
                 collection.insert_one(new_patient_data)
 
+            # Evaluate lab values
             matching_diseases = self.evaluate_lab_values(age, gender, lab_values_data)
+            logging.debug(f"Matching diseases: {matching_diseases}")
 
+            # Return the result
             if matching_diseases:
                 return {'status': 'success', 'message': 'Lab values saved and evaluated successfully!', 'results': matching_diseases}
             else:
@@ -160,7 +184,7 @@ class DatabaseManager:
             return {'status': 'error', 'message': str(e)}
 
     def save_rule(self, rule):
-        collection = self.get_collection('Rulebase')
+        collection = self.get_collection(rules_data_collection)  # Specify the correct collection name
         collection.insert_one(rule.to_dict())
 
     def evaluate_lab_values(self, patient_age, patient_gender, lab_values):
@@ -196,5 +220,5 @@ class DatabaseManager:
             return []
 
     def get_all_rules(self):
-        collection = self.get_collection('Rulebase')
+        collection = self.get_collection(rules_data_collection)  # Specify the correct collection name
         return [RuleAggregator.from_dict(rule) for rule in collection.find()]
