@@ -1,4 +1,3 @@
-<!-- view_rulebase.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +16,7 @@
     <title>View Rulebase</title>
     <style>
         .form-container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             background: #fff;
             padding: 20px;
@@ -94,6 +93,26 @@
         .view-all-button:hover {
             background-color: #e74c3c;
         }
+
+        /* Increase column widths */
+        th:nth-child(1), td:nth-child(1) { width: 20%; } /* Disease Name */
+        th:nth-child(2), td:nth-child(2) { width: 15%; } /* Disease Code */
+        th:nth-child(3), td:nth-child(3) { width: 15%; } /* Category */
+        th:nth-child(4), td:nth-child(4) { width: 40%; } /* Rules */
+        th:nth-child(5), td:nth-child(5) { width: 10%; } /* Actions */
+
+        /* Adjust table container to reduce empty space */
+        .appoinment-wrap {
+            width: 100%;
+            max-width: 1200px; /* Adjust this value as needed */
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Ensure table takes full width of the container */
+        .appoinment-wrap table {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -140,7 +159,7 @@
     </nav>
 </header>
 
-<section class="section appoinment"></section>
+<section class="section appoinment">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-8">

@@ -5,7 +5,7 @@ import datetime
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-class ConditionAnalyser(ABC):
+class ConditionCompiler(ABC):
     """
     Abstract base class for condition analysis.
     Defines the interface for evaluating conditions based on patient data.
@@ -60,7 +60,7 @@ class ConditionAnalyser(ABC):
             'gender': self.gender
         }
 
-class RangeCondition(ConditionAnalyser):
+class RangeCondition(ConditionCompiler):
     """
     Condition class for evaluating whether a lab value falls within a specified range.
     """
@@ -118,7 +118,7 @@ class RangeCondition(ConditionAnalyser):
         })
         return data
 
-class ComparisonCondition(ConditionAnalyser):
+class ComparisonCondition(ConditionCompiler):
     """
     Condition class for evaluating whether a lab value meets a comparison condition.
     """
@@ -195,7 +195,7 @@ class ComparisonCondition(ConditionAnalyser):
         })
         return data
 
-class TimeDependentCondition(ConditionAnalyser):
+class TimeDependentCondition(ConditionCompiler):
     """
     Condition class for evaluating whether lab values meet a time-dependent condition.
     """

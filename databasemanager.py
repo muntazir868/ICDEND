@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from flask import current_app, request
 from ruleaggregator import RuleAggregator, RuleEntry
-from conditionanalyser import ConditionAnalyser
+from conditioncompiler import ConditionCompiler
 import logging
 from bson import ObjectId
 

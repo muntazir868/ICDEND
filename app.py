@@ -1,9 +1,7 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 import logging
-from bson import ObjectId
 from databasemanager import DatabaseManager
 from rulebaseapp import RulebaseApp
-import datetime
 import logging
 import os
 import json

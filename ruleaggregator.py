@@ -1,4 +1,4 @@
-from conditionanalyser import ConditionAnalyser
+from conditioncompiler import ConditionCompiler
 
 class RuleAggregator:
     """
@@ -86,7 +86,7 @@ class RuleEntry:
         :param rule_entry_data: Dictionary containing the necessary data.
         :return: RuleEntry instance.
         """
-        conditions = [ConditionAnalyser.from_dict(condition) for condition in rule_entry_data.get('conditions', [])]
+        conditions = [ConditionCompiler.from_dict(condition) for condition in rule_entry_data.get('conditions', [])]
         return RuleEntry(
             rule_entry_data.get('rule_id'),
             conditions
