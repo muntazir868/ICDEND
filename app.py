@@ -5,7 +5,7 @@ from rulebaseapp import RulebaseApp
 import logging
 import os
 import json
-from config import mongodb_link, secret_key,lab_values_collection
+from config import mongodb_link, secret_key, lab_values_collection
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -19,19 +19,19 @@ app.secret_key = secret_key  # Replace with a unique and secret key
 logging.basicConfig(level=logging.INFO)
 app.logger.setLevel(logging.INFO)
 
-# Initialize MongoDB client and access the Project1 database
-try:
-    db_manager = DatabaseManager(mongodb_link, 'ExpertSystem')
-    rulebase_app = RulebaseApp(db_manager)
-    lab_input_user_values_collection = db_manager.get_collection(lab_values_collection)
-except Exception as e:
-    app.logger.error(f"Error connecting to MongoDB: {e}")
-    exit(1)
-
 class Controller:
     """
     Controller class that handles the routing and logic for the Flask application.
     """
+
+    def __init__(self):
+        try:
+            self.db_manager = DatabaseManager(mongodb_link, 'ExpertSystem')
+            self.rulebase_app = RulebaseApp(self.db_manager)
+            self.lab_input_user_values_collection = self.db_manager.get_collection(lab_values_collection)
+        except Exception as e:
+            app.logger.error(f"Error connecting to MongoDB: {e}")
+            exit(1)
 
     @staticmethod
     @app.route('/')
@@ -57,8 +57,9 @@ class Controller:
         - GET: Renders the rulebase page with mappings and ICD mappings.
         - POST: Saves the rulebase data and returns the result.
         """
+        controller = Controller()
         if request.method == 'POST':
-            result = db_manager.save_rulebase(request)
+            result = controller.db_manager.save_rulebase(request)
             return jsonify(result), 200 if result['status'] == 'success' else 500
 
         # Fetch mappings JSON for GET request -- these are the mappings for the ICD names and their codes
@@ -81,8 +82,9 @@ class Controller:
         - GET: Renders the lab values page.
         - POST: Saves the lab values data and returns the result.
         """
+        controller = Controller()
         if request.method == 'POST':
-            result = db_manager.save_lab_values(request)
+            result = controller.db_manager.save_lab_values(request)
             return jsonify(result), 200 if result['status'] == 'success' else 500
         return render_template('lab_values.html')
 
@@ -92,8 +94,9 @@ class Controller:
         """
         Renders the view rulebase page with all rules fetched from the database.
         """
+        controller = Controller()
         try:
-            rules = rulebase_app.get_all_rules()
+            rules = controller.rulebase_app.get_all_rules()
             for rule in rules:
                 app.logger.debug(f"Rule: {rule}")
             return render_template('view_rulebase.html', rules=rules)
@@ -107,8 +110,9 @@ class Controller:
         """
         Deletes a rule based on the disease code and redirects to the view rulebase page.
         """
+        controller = Controller()
         try:
-            rulebase_app.delete_rule(disease_code)
+            controller.rulebase_app.delete_rule(disease_code)
             return redirect(url_for('view_rulebase'))
         except Exception as e:
             app.logger.error(f"Error deleting rule: {e}")
@@ -121,9 +125,10 @@ def view_patient_data():
     - GET: Renders the view patient data page with all patient data.
     - POST: Searches for a specific patient by ID and renders the page with the found patient data.
     """
+    controller = Controller()
     try:
         # Fetch all patient data from the User_Input_Lab_Values collection
-        patient_data = list(lab_input_user_values_collection.find())
+        patient_data = list(controller.lab_input_user_values_collection.find())
         
         # Sort patient data by patient ID
         patient_data.sort(key=lambda x: x['patient_id'])
@@ -157,7 +162,8 @@ def view_patient_data():
     
 @app.route('/edit_rule/<rule_id>', methods=['GET'])
 def edit_rule(rule_id):
-    rule = rulebase_app.get_rule_by_id(rule_id)
+    controller = Controller()
+    rule = controller.rulebase_app.get_rule_by_id(rule_id)
     if rule:
         # Fetch mappings JSON for GET request -- these are the mappings for the ICD names and their codes
         mappings_path = os.path.join(app.root_path, 'static', 'mappings.json')
@@ -176,7 +182,8 @@ def edit_rule(rule_id):
     
 @app.route('/update_rule/<rule_id>', methods=['POST'])
 def update_rule(rule_id):
-    rule = rulebase_app.get_rule_by_id(rule_id)
+    controller = Controller()
+    rule = controller.rulebase_app.get_rule_by_id(rule_id)
     if not rule:
         flash('Rule not found', 'error')
         return redirect(url_for('view_rulebase'))
@@ -230,7 +237,7 @@ def update_rule(rule_id):
         rule.rules.append(rule_entry)
 
     # Save the updated rule
-    result = rulebase_app.update_rule(rule_id, rule.category, rule.disease_names, rule.disease_codes, rule.rules)
+    result = controller.rulebase_app.update_rule(rule_id, rule.category, rule.disease_names, rule.disease_codes, rule.rules)
     if result['status'] == 'success':
         flash('Rule updated successfully', 'success')
     else:
