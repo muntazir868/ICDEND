@@ -15,12 +15,6 @@
     <link rel="stylesheet" href="static/css/style.css">
     
     <style>
-        /* body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-        } */
 
         .form-container {
             max-width: 800px;
@@ -465,11 +459,11 @@ function formatConditions(conditions) {
             valueRange = `${condition.min_value} to ${condition.max_value} ${condition.unit}`;
         } else if (condition.type === 'comparison') {
             valueRange = `${condition.operator} ${condition.comparison_value} ${condition.unit}`;
-        } else if (condition.type === 'time-dependent') {
+        } else if (condition.type === 'time-dependent' || condition.type === 'timedependent') {
+            console.log('Time-dependent condition:', condition); // Log the condition
             valueRange = `${condition.operator} ${condition.comparison_time_value} ${condition.unit} over ${condition.time} days`;
-        } else {
-            valueRange = 'N/A';
-        }
+        } 
+        
 
         return `Age: ${ageRange}, Gender: ${gender}, Parameter: ${parameter}, Value Range: ${valueRange}`;
     }).join('; ');
@@ -530,8 +524,8 @@ function displayResults(results) {
         // Append the table to the results div
         resultsDiv.appendChild(table);
     }
-
 }
+
 </script>
 
 <!--- Footer -->
