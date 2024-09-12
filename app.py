@@ -127,38 +127,27 @@ def view_patient_data():
     """
     controller = Controller()
     try:
+        if request.method == 'POST':
+            patient_id = request.form.get('patient_id')
+            if patient_id:
+                # Query MongoDB to find the patient by ID
+                found_patient = controller.lab_input_user_values_collection.find_one({'patient_id': patient_id})
+                if found_patient:
+                    return render_template('view_patient_data.html', patient_data=[found_patient])
+                else:
+                    return render_template('view_patient_data.html', patient_data=[], message=f"Patient with ID {patient_id} not found.")
+
         # Fetch all patient data from the User_Input_Lab_Values collection
         patient_data = list(controller.lab_input_user_values_collection.find())
         
         # Sort patient data by patient ID
         patient_data.sort(key=lambda x: x['patient_id'])
 
-        if request.method == 'POST':
-            patient_id = request.form.get('patient_id')
-            if patient_id:
-                # Perform binary search to find the patient ID. 
-                def binary_search(arr, target):
-                    low, high = 0, len(arr) - 1
-                    while low <= high:
-                        mid = (low + high) // 2
-                        if arr[mid]['patient_id'] == target:
-                            return arr[mid]
-                        elif arr[mid]['patient_id'] < target:
-                            low = mid + 1
-                        else:
-                            high = mid - 1
-                    return None
-                
-                found_patient = binary_search(patient_data, patient_id)
-                if found_patient:
-                    return render_template('view_patient_data.html', patient_data=[found_patient])
-                else:
-                    return render_template('view_patient_data.html', patient_data=[], message=f"Patient with ID {patient_id} not found.")
-
         return render_template('view_patient_data.html', patient_data=patient_data)
     except Exception as e:
         app.logger.error(f"Error fetching patient data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
+    
     
 @app.route('/edit_rule/<rule_id>', methods=['GET'])
 def edit_rule(rule_id):
