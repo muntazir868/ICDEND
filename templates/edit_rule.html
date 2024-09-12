@@ -173,7 +173,7 @@
                                     <select class="form-control condition-type" id="condition-type-{{ loop.index }}-{{ loop.index }}" name="conditions[{{ loop.index }}][]">
                                         <option value="range" {% if condition.type == 'range' %}selected{% endif %}>Range Condition</option>
                                         <option value="comparison" {% if condition.type == 'comparison' %}selected{% endif %}>Comparison Condition</option>
-                                        <option value="time-dependent" {% if condition.type == 'time-dependent' %}selected{% endif %}>Time Dependent Condition</option>
+                                        <option value="time-dependent" {% if condition.type == 'time-dependent' or condition.type == 'timedependent' or condition.type == 'TIMEDEPENDENT' %}selected{% endif %}>Time Dependent Condition</option>
                                     </select>
                                 </div>
                                 <div class="form-group flex-item">
@@ -280,35 +280,35 @@
     <script src="plugins/bootstrap/bootstrap.min.js"></script>
     <script src="js/script.js"></script>
 
-<!-- JavaScript to Handle Dynamic Form Elements -->
-<script type="application/json" id="mappings-data">
-    {{ mappings | tojson | safe }}
-</script>
-<script type="application/json" id="icd-mappings-data">
-    {{ icd_mappings | tojson | safe }}
-</script>
-<script type="application/json" id="rule-count-data">
-    {{ rule.rules | length | tojson | safe }}
-</script>
-<script type="application/json" id="condition-count-data">
-    {
-        {% for rule_entry in rule.rules %}
-            "{{ loop.index }}": {{ rule_entry.conditions | length }}{% if not loop.last %},{% endif %}
-        {% endfor %}
-    }
-</script>
-<script type="application/json" id="disease-code-count-data">
-    {{ rule.disease_codes | length | tojson | safe }}
-</script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        let ruleCount = JSON.parse(document.getElementById('rule-count-data').textContent);
-        let conditionCount = JSON.parse(document.getElementById('condition-count-data').textContent);
-        let diseaseCodeCount = JSON.parse(document.getElementById('disease-code-count-data').textContent);
-        let mappings = JSON.parse(document.getElementById('mappings-data').textContent);
-        let icdMappings = JSON.parse(document.getElementById('icd-mappings-data').textContent);
-        
+    <!-- JavaScript to Handle Dynamic Form Elements -->
+    <script type="application/json" id="mappings-data">
+        {{ mappings | tojson | safe }}
+    </script>
+    <script type="application/json" id="icd-mappings-data">
+        {{ icd_mappings | tojson | safe }}
+    </script>
+    <script type="application/json" id="rule-count-data">
+        {{ rule.rules | length | tojson | safe }}
+    </script>
+    <script type="application/json" id="condition-count-data">
+        {
+            {% for rule_entry in rule.rules %}
+                "{{ loop.index }}": {{ rule_entry.conditions | length }}{% if not loop.last %},{% endif %}
+            {% endfor %}
+        }
+    </script>
+    <script type="application/json" id="disease-code-count-data">
+        {{ rule.disease_codes | length | tojson | safe }}
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let ruleCount = JSON.parse(document.getElementById('rule-count-data').textContent);
+            let conditionCount = JSON.parse(document.getElementById('condition-count-data').textContent);
+            let diseaseCodeCount = JSON.parse(document.getElementById('disease-code-count-data').textContent);
+            let mappings = JSON.parse(document.getElementById('mappings-data').textContent);
+            let icdMappings = JSON.parse(document.getElementById('icd-mappings-data').textContent);
+            
             function initializeParametersAndUnits() {
                 $('.parameter').each(function () {
                     const parameterSelect = $(this);
@@ -376,7 +376,7 @@
                     conditionRow.find('.range-condition').show();
                 } else if (selectedType === 'comparison') {
                     conditionRow.find('.comparison-condition').show();
-                } else if (selectedType === 'time-dependent') {
+                } else if (selectedType === 'time-dependent' || selectedType === 'timedependent' || selectedType === 'TIMEDEPENDENT') {
                     conditionRow.find('.time-dependent-condition').show();
                 }
             }
@@ -612,11 +612,11 @@
                         </div>
                     </div>
                 `;
-            $(`#conditions-${ruleId}`).append(conditionHtml);
-            updateRemoveButtons();
-            initializeConditionFields();
-            initializeParametersAndUnitsForNewCondition(ruleId, conditionCount[ruleId]); // Attach event listeners to the new condition
-        });
+                $(`#conditions-${ruleId}`).append(conditionHtml);
+                updateRemoveButtons();
+                initializeConditionFields();
+                initializeParametersAndUnitsForNewCondition(ruleId, conditionCount[ruleId]); // Attach event listeners to the new condition
+            });
         
             // Remove condition
             $(document).on('click', '.remove-condition', function () {
