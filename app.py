@@ -139,6 +139,8 @@ def view_patient_data():
         app.logger.error(f"Error fetching patient data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
+    
+    
 @app.route('/edit_rule/<rule_id>', methods=['GET'])
 def edit_rule(rule_id):
     rule = controller.rulebase_app.get_rule_by_id(rule_id)

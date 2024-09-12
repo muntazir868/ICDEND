@@ -73,7 +73,7 @@ class RangeCondition(ConditionCompiler):
         """
         self.min_value = condition_data.get('min_value')
         self.max_value = condition_data.get('max_value')
-        self.parameter = condition_data.get('parameter')
+        self.parameter = condition_data.get('parameter') # Why to repeat the attributes here?
         self.unit = condition_data.get('unit')
         self.age_min = condition_data.get('age_min')
         self.age_max = condition_data.get('age_max')
