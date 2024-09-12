@@ -58,7 +58,11 @@ def rulebase():
     """
     if request.method == 'POST':
         result = controller.db_manager.save_rulebase(request)
-        return jsonify(result), 200 if result['status'] == 'success' else 500
+        if result['status'] == 'success':
+            flash('Rulebase data saved successfully!', 'success')
+        else:
+            flash('Failed to save rulebase data.', 'error')
+        return redirect(url_for('rulebase'))
 
     # Fetch mappings JSON for GET request -- these are the mappings for the ICD names and their codes
     mappings_path = os.path.join(app.root_path, 'static', 'mappings.json')
@@ -71,6 +75,7 @@ def rulebase():
         icd_mappings = json.load(icd_mappings_file)
 
     return render_template('rulebase.html', mappings=mappings, icd_mappings=icd_mappings)
+
 
 @app.route('/lab_values', methods=['GET', 'POST'])
 def lab_values():
