@@ -303,24 +303,44 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
+
+            $(document).ready(function () {
+    // Initialize disease code dropdowns
+    $('.disease-name').each(function () {
+        const diseaseNameInput = $(this);
+        const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
+        populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
+    });
+
+    // Event listener for disease name input with debounce
+    $(document).on('input', '.disease-name', debounce(function () {
+        const diseaseNameInput = $(this);
+        const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
+        populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
+    }, 300));
+});
             let ruleCount = JSON.parse(document.getElementById('rule-count-data').textContent);
             let conditionCount = JSON.parse(document.getElementById('condition-count-data').textContent);
             let diseaseCodeCount = JSON.parse(document.getElementById('disease-code-count-data').textContent);
             let mappings = JSON.parse(document.getElementById('mappings-data').textContent);
             let icdMappings = JSON.parse(document.getElementById('icd-mappings-data').textContent);
             
-            function initializeParametersAndUnits() {
+                        function initializeParametersAndUnits() {
                 $('.parameter').each(function () {
                     const parameterSelect = $(this);
+                    const conditionGroup = parameterSelect.closest('.condition-group');
+                    const parameter = parameterSelect.val();
+
                     parameterSelect.empty();
                     const sortedKeys = Object.keys(mappings).sort();
                     $.each(sortedKeys, function(index, key) {
                         parameterSelect.append($('<option>', {
                             value: key,
-                            text: key
+                            text: key,
+                            selected: key === parameter // Set selected based on fetched data
                         }));
                     });
-        
+
                     parameterSelect.change(function () {
                         const parameter = $(this).val();
                         const unitSelect = $(this).closest('.condition-group').find('.unit');
@@ -336,6 +356,20 @@
                             });
                         }
                     });
+
+                    // Initialize units based on the selected parameter
+                    const unitSelect = conditionGroup.find('.unit');
+                    unitSelect.empty();
+                    if (mappings[parameter] && mappings[parameter].units) {
+                        $.each(mappings[parameter].units, function(index, unit) {
+                            if (unit !== null) {
+                                unitSelect.append($('<option>', {
+                                    value: unit,
+                                    text: unit
+                                }));
+                            }
+                        });
+                    }
                 });
             }
         
@@ -367,11 +401,11 @@
                 });
             }
         
-            function toggleConditionFields(conditionRow, selectedType) {
+                        function toggleConditionFields(conditionRow, selectedType) {
                 conditionRow.find('.range-condition').hide();
                 conditionRow.find('.comparison-condition').hide();
                 conditionRow.find('.time-dependent-condition').hide();
-        
+
                 if (selectedType === 'range') {
                     conditionRow.find('.range-condition').show();
                 } else if (selectedType === 'comparison') {
@@ -381,17 +415,20 @@
                 }
             }
         
-            function initializeConditionFields() {
+                        function initializeConditionFields() {
                 $('.condition-type').each(function () {
                     const conditionGroup = $(this).closest('.condition-group');
-                    toggleConditionFields(conditionGroup, $(this).val());
+                    const selectedType = $(this).val();
+
+                    toggleConditionFields(conditionGroup, selectedType);
                 });
-        
+
                 $('.condition-type').change(function () {
                     const conditionGroup = $(this).closest('.condition-group');
                     toggleConditionFields(conditionGroup, $(this).val());
                 });
             }
+
         
             // Add new disease code
             $('#add-disease-code').click(function () {
@@ -703,8 +740,10 @@
             }
         
             // Function to populate disease code dropdown based on disease name
-            function populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown) {
+                        function populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown) {
                 const diseaseName = diseaseNameInput.val().trim().toLowerCase();
+                const diseaseCode = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown').val();
+
                 diseaseCodeDropdown.empty();
                 if (diseaseName) {
                     const matchingCodes = Object.keys(icdMappings).filter(code => kmpSearch(icdMappings[code].toLowerCase(), diseaseName));
@@ -712,7 +751,8 @@
                         matchingCodes.forEach(code => {
                             diseaseCodeDropdown.append($('<option>', {
                                 value: code,
-                                text: `${code} - ${icdMappings[code]}`
+                                text: `${code} - ${icdMappings[code]}`,
+                                selected: code === diseaseCode // Set selected based on fetched data
                             }));
                         });
                     } else {
