@@ -34,7 +34,7 @@ class RuleAggregator:
             'rules': [rule.to_dict() for rule in self.rules],
             '_id': self._id
         }
-
+# WHy you define the classmethod
     @classmethod
     def from_dict(cls, data):
         """
