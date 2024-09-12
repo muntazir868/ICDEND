@@ -4,7 +4,8 @@ from databasemanager import DatabaseManager
 from rulebaseapp import RulebaseApp
 import os
 import json
-from config import mongodb_link, secret_key, lab_values_collection
+from config import mongodb_link, secret_key, lab_values_collection, rules_data_collection
+
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -144,20 +145,21 @@ def view_patient_data():
         app.logger.error(f"Error fetching patient data: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-@app.route('/edit_rule/<rule_id>', methods=['GET'])
+@app.route('/edit_rule/<rule_id>', methods=['GET', 'POST'])
 def edit_rule(rule_id):
     rule = controller.rulebase_app.get_rule_by_id(rule_id)
     if rule:
         # Fetch mappings JSON for GET request -- these are the mappings for the ICD names and their codes
         mappings_path = os.path.join(app.root_path, 'static', 'mappings.json')
         icd_mappings_path = os.path.join(app.root_path, 'static', 'sortedIcdMappings.json')
+        print(rule)
 
         with open(mappings_path, 'r') as mappings_file:
             mappings = json.load(mappings_file)
 
         with open(icd_mappings_path, 'r') as icd_mappings_file:
             icd_mappings = json.load(icd_mappings_file)
-
+        
         return render_template('edit_rule.html', rule=rule, mappings=mappings, icd_mappings=icd_mappings)
     else:
         flash('Rule not found', 'error')

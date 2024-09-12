@@ -129,21 +129,20 @@
                 <label for="category" style="font-weight: bold;">Category:</label>
                 <input type="text" class="form-control" id="category" name="category" value="{{ rule.category }}" required style="width: 500px; height: 70px; font-weight: bold;">
             </div>
+
+
             <!-- Disease Codes Section -->
             <div id="disease-codes">
                 <h4>Disease Codes</h4>
-                {% for disease_code in rule.disease_codes %}
-                <div class="disease-code" id="disease-code-{{ loop.index }}">
+                <div class="disease-code" id="disease-code-1">
                     <div class="form-group">
-                        <label for="disease-name-{{ loop.index }}">Disease Name:</label>
-                        <input type="text" class="form-control disease-name" id="disease-name-{{ loop.index }}" name="disease_names[]" value="{{ disease_code.name }}" required>
+                        <label for="disease-name-1" style="font-weight: bold;">Disease Name:</label>
+                        <input type="text" class="form-control disease-name" id="disease-name-1" name="disease_names[]" value="" required style="width: 500px; height: 70px; font-weight: bold;">
                     </div>
                     <div class="form-group">
-                        <label for="disease-code-{{ loop.index }}">Disease Code:</label>
-                        <select class="form-control disease-code-dropdown" id="disease-code-{{ loop.index }}" name="disease_codes[]" required>
-                            {% for key, value in icd_mappings.items() %}
-                                <option value="{{ key }}" {% if key == disease_code.code %}selected{% endif %}>{{ key }} - {{ value }}</option>
-                            {% endfor %}
+                        <label for="disease-code-1" style="font-weight: bold;">Disease Code:</label>
+                        <select class="form-control disease-code-dropdown" id="disease-code-1" name="disease_codes[]" required style="width: 500px; height: 70px; font-weight: bold;">
+                            <!-- Example options, replace with actual values -->
                         </select>
                     </div>
                     <br>
@@ -151,7 +150,6 @@
                         <button type="button" class="btn btn-danger remove-disease-code" style="display: none;">Remove Disease Code</button>
                     </div>
                 </div>
-                {% endfor %}
             </div>
             <div class="center-buttons">
                 <button type="button" id="add-disease-code" class="btn btn-success">Add New Disease Code</button>
