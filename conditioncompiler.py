@@ -71,6 +71,7 @@ class RangeCondition(ConditionCompiler):
         
         :param condition_data: Dictionary containing condition data.
         """
+        self.type = "Range Condition"
         self.min_value = condition_data.get('min_value')
         self.max_value = condition_data.get('max_value')
         self.parameter = condition_data.get('parameter')
@@ -129,6 +130,7 @@ class ComparisonCondition(ConditionCompiler):
         
         :param condition_data: Dictionary containing condition data.
         """
+        self.type = "Comparison Condition"
         self.operator = condition_data.get('operator')
         self.comparison_value = condition_data.get('comparison_value')
         self.parameter = condition_data.get('parameter')
@@ -206,6 +208,7 @@ class TimeDependentCondition(ConditionCompiler):
         
         :param condition_data: Dictionary containing condition data.
         """
+        self.type = "Time Dependent Condition"
         self.operator = condition_data.get('operator')
         self.comparison_time_value = float(condition_data.get('comparison_time_value'))
         self.time = int(condition_data.get('time'))

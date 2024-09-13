@@ -142,10 +142,36 @@
         .actions form {
             margin: 0;
         }
+        
+        .flashes {
+            list-style: none;
+            padding: 0;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
     </style>
     
 </head>
 <body>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
 <header>
     <div class="header-top-bar">
         <div class="container">

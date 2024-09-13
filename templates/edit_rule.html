@@ -1,6 +1,7 @@
 <!-- edit_rule.html -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Edit Rule</title>
@@ -14,7 +15,7 @@
 
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/static/images/favicon-32x32.png" />
-    
+
     <style>
         .form-container {
             max-width: 800px;
@@ -25,7 +26,10 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        h2, h4, h5, h6 {
+        h2,
+        h4,
+        h5,
+        h6 {
             color: #333;
         }
 
@@ -40,7 +44,8 @@
             margin-right: 10px;
         }
 
-        .form-group select, .form-group input {
+        .form-group select,
+        .form-group input {
             flex: 2;
             padding: 8px;
             border: 1px solid #ddd;
@@ -71,11 +76,13 @@
             text-align: center;
         }
 
-        .condition-group, .rule-group {
+        .condition-group,
+        .rule-group {
             margin-bottom: 20px;
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="header-top-bar">
@@ -83,8 +90,10 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6">
                         <ul class="top-bar-info list-inline-item pl-0 mb-0">
-                            <li class="list-inline-item"><a href="mailto:support@gmail.com"><i class="icofont-support-faq mr-2"></i>support@expert-system.com</a></li>
-                            <li class="list-inline-item"><i class="icofont-location-pin mr-2"></i>Address: CureMD, Pakistan </li>
+                            <li class="list-inline-item"><a href="mailto:support@gmail.com"><i
+                                        class="icofont-support-faq mr-2"></i>support@expert-system.com</a></li>
+                            <li class="list-inline-item"><i class="icofont-location-pin mr-2"></i>Address: CureMD,
+                                Pakistan </li>
                         </ul>
                     </div>
                     <div class="col-lg-6">
@@ -127,29 +136,38 @@
             <!-- Disease Category Section -->
             <div class="form-group">
                 <label for="category" style="font-weight: bold;">Category:</label>
-                <input type="text" class="form-control" id="category" name="category" value="{{ rule.category }}" required style="width: 500px; height: 70px; font-weight: bold;">
+                <input type="text" class="form-control" id="category" name="category" value="{{ rule.category }}"
+                    required style="width: 500px; height: 70px; font-weight: bold;">
             </div>
 
 
             <!-- Disease Codes Section -->
             <div id="disease-codes">
                 <h4>Disease Codes</h4>
-                <div class="disease-code" id="disease-code-1">
+                {% for disease_code in rule.disease_codes %}
+                <div class="disease-code" id="disease-code-{{ loop.index }}">
                     <div class="form-group">
-                        <label for="disease-name-1" style="font-weight: bold;">Disease Name:</label>
-                        <input type="text" class="form-control disease-name" id="disease-name-1" name="disease_names[]" value="" required style="width: 500px; height: 70px; font-weight: bold;">
+                        <label for="disease-name-{{ loop.index }}">Disease Name:</label>
+                        <input type="text" class="form-control disease-name" id="disease-name-{{ loop.index }}"
+                            name="disease_names[]" value="{{ disease_code.name }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="disease-code-1" style="font-weight: bold;">Disease Code:</label>
-                        <select class="form-control disease-code-dropdown" id="disease-code-1" name="disease_codes[]" required style="width: 500px; height: 70px; font-weight: bold;">
-                            <!-- Example options, replace with actual values -->
+                        <label for="disease-code-{{ loop.index }}">Disease Code:</label>
+                        <select class="form-control disease-code-dropdown" id="disease-code-{{ loop.index }}"
+                            name="disease_codes[]" required>
+                            {% for key, value in icd_mappings.items() %}
+                            <option value="{{ key }}" {% if key==disease_code.code %}selected{% endif %}>{{ key }} - {{
+                                value }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <br>
                     <div class="center-buttons">
-                        <button type="button" class="btn btn-danger remove-disease-code" style="display: none;">Remove Disease Code</button>
+                        <button type="button" class="btn btn-danger remove-disease-code" style="display: none;">Remove
+                            Disease Code</button>
                     </div>
                 </div>
+                {% endfor %}
             </div>
             <div class="center-buttons">
                 <button type="button" id="add-disease-code" class="btn btn-success">Add New Disease Code</button>
@@ -158,7 +176,10 @@
             <!-- Rules Section -->
             <div id="rules">
                 <h4>Rules</h4>
+
                 {% for rule_entry in rule.rules %}
+
+                <!-- {{rule_entry.condition}}  THIS IS THE TRUE COndition  -->
                 <div class="rule-group" id="rule-{{ loop.index }}">
                     <h5>Rule {{ loop.index }}</h5>
                     <div class="conditions" id="conditions-{{ loop.index }}">
@@ -166,96 +187,152 @@
                         <div class="condition-group" id="condition-{{ loop.index }}-{{ loop.index }}">
                             <h6>Condition {{ loop.index }}</h6>
                             <div class="flex-container">
+                                {{condition.type}}
                                 <div class="form-group flex-item">
-                                    <label for="condition-type-{{ loop.index }}-{{ loop.index }}">Condition Type:</label>
-                                    <select class="form-control condition-type" id="condition-type-{{ loop.index }}-{{ loop.index }}" name="conditions[{{ loop.index }}][]">
-                                        <option value="range" {% if condition.type == 'range' %}selected{% endif %}>Range Condition</option>
-                                        <option value="comparison" {% if condition.type == 'comparison' %}selected{% endif %}>Comparison Condition</option>
-                                        <option value="time-dependent" {% if condition.type == 'time-dependent' or condition.type == 'timedependent' or condition.type == 'TIMEDEPENDENT' %}selected{% endif %}>Time Dependent Condition</option>
+                                    <label for="condition-type-{{ loop.index }}-{{ loop.index }}">Condition
+                                        Type:</label>
+
+                                    <select class="form-control condition-type"
+                                        id="condition-type-{{ loop.index }}-{{ loop.index }}"
+                                        name="conditions[{{ loop.index }}][]">
+                                        <option value="range" {% if selected_condition=='range' %}selected{% endif %}>
+                                            Range Condition</option>
+                                        <option value="comparison" {% if rule_entry.condition=='Comparison Condition' %}selected{%
+                                            endif %}>Comparison Condition</option>
+                                        <option value="time-dependent" {% if selected_condition=='time-dependent'
+                                            %}selected{% endif %}>Time Dependent Condition</option>
                                     </select>
                                 </div>
                                 <div class="form-group flex-item">
                                     <label for="parameter-{{ loop.index }}-{{ loop.index }}">Parameter:</label>
-                                    <select class="form-control parameter" id="parameter-{{ loop.index }}-{{ loop.index }}" name="parameters[{{ loop.index }}][]">
+                                    <select class="form-control parameter"
+                                        id="parameter-{{ loop.index }}-{{ loop.index }}"
+                                        name="parameters[{{ loop.index }}][]">
                                         {% for key in mappings.keys()|sort %}
-                                            <option value="{{ key }}" {% if condition.parameter == key %}selected{% endif %}>{{ key }}</option>
+                                        <option value="{{ key }}" {% if condition.parameter==key %}selected{% endif %}>
+                                            {{ key }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                                 <div class="form-group flex-item range-condition" style="display: none;">
                                     <label for="min-value-{{ loop.index }}-{{ loop.index }}">Minimum Value:</label>
-                                    <input type="number" class="form-control min-value" id="min-value-{{ loop.index }}-{{ loop.index }}" name="min_values[{{ loop.index }}][]" value="{{ condition.min_value }}" step="0.01">
+                                    <input type="number" class="form-control min-value"
+                                        id="min-value-{{ loop.index }}-{{ loop.index }}"
+                                        name="min_values[{{ loop.index }}][]" value="{{ condition.min_value }}"
+                                        step="0.01">
                                 </div>
                                 <div class="form-group flex-item range-condition" style="display: none;">
                                     <label for="max-value-{{ loop.index }}-{{ loop.index }}">Maximum Value:</label>
-                                    <input type="number" class="form-control max-value" id="max-value-{{ loop.index }}-{{ loop.index }}" name="max_values[{{ loop.index }}][]" value="{{ condition.max_value }}" step="0.01">
+                                    <input type="number" class="form-control max-value"
+                                        id="max-value-{{ loop.index }}-{{ loop.index }}"
+                                        name="max_values[{{ loop.index }}][]" value="{{ condition.max_value }}"
+                                        step="0.01">
                                 </div>
                                 <div class="form-group flex-item comparison-condition" style="display: none;">
                                     <label for="operator-comparison-{{ loop.index }}-{{ loop.index }}">Operator:</label>
-                                    <select class="form-control operator" id="operator-comparison-{{ loop.index }}-{{ loop.index }}" name="operators[{{ loop.index }}][]">
-                                        <option value="greater" {% if condition.operator == 'greater' %}selected{% endif %}>></option>
-                                        <option value="less" {% if condition.operator == 'less' %}selected{% endif %}><</option>
-                                        <option value="equal" {% if condition.operator == 'equal' %}selected{% endif %}>=</option>
-                                        <option value="greater or equal" {% if condition.operator == 'greater or equal' %}selected{% endif %}>>=</option>
-                                        <option value="less or equal" {% if condition.operator == 'less or equal' %}selected{% endif %}><=</option>
+                                    <select class="form-control operator"
+                                        id="operator-comparison-{{ loop.index }}-{{ loop.index }}"
+                                        name="operators[{{ loop.index }}][]">
+                                        <option value="greater" {% if condition.operator=='greater' %}selected{% endif
+                                            %}>></option>
+                                        <option value="less" {% if condition.operator=='less' %}selected{% endif %}>
+                                            << /option>
+                                        <option value="equal" {% if condition.operator=='equal' %}selected{% endif %}>=
+                                        </option>
+                                        <option value="greater or equal" {% if condition.operator=='greater or equal'
+                                            %}selected{% endif %}>>=</option>
+                                        <option value="less or equal" {% if condition.operator=='less or equal'
+                                            %}selected{% endif %}>
+                                            <=< /option>
                                     </select>
                                 </div>
                                 <div class="form-group flex-item comparison-condition" style="display: none;">
                                     <label for="value-comparison-{{ loop.index }}-{{ loop.index }}">Value:</label>
-                                    <input type="number" class="form-control comparison-value" id="value-comparison-{{ loop.index }}-{{ loop.index }}" name="comparison_values[{{ loop.index }}][]" value="{{ condition.comparison_value }}" step="0.01">
+                                    <input type="number" class="form-control comparison-value"
+                                        id="value-comparison-{{ loop.index }}-{{ loop.index }}"
+                                        name="comparison_values[{{ loop.index }}][]"
+                                        value="{{ condition.comparison_value }}" step="0.01">
                                 </div>
                                 <div class="form-group flex-item time-dependent-condition" style="display: none;">
                                     <label for="time-{{ loop.index }}-{{ loop.index }}">Time:</label>
-                                    <input type="number" class="form-control time-value" id="time-{{ loop.index }}-{{ loop.index }}" name="time_values[{{ loop.index }}][]" value="{{ condition.time }}">
+                                    <input type="number" class="form-control time-value"
+                                        id="time-{{ loop.index }}-{{ loop.index }}"
+                                        name="time_values[{{ loop.index }}][]" value="{{ condition.time }}">
                                 </div>
                                 <div class="form-group flex-item time-dependent-condition" style="display: none;">
                                     <label for="operator-time-{{ loop.index }}-{{ loop.index }}">Operator:</label>
-                                    <select class="form-control operator" id="operator-time-{{ loop.index }}-{{ loop.index }}" name="operators[{{ loop.index }}][]">
-                                        <option value="greater" {% if condition.operator == 'greater' %}selected{% endif %}>></option>
-                                        <option value="less" {% if condition.operator == 'less' %}selected{% endif %}><</option>
-                                        <option value="equal" {% if condition.operator == 'equal' %}selected{% endif %}>=</option>
-                                        <option value="greater or equal" {% if condition.operator == 'greater or equal' %}selected{% endif %}>>=</option>
-                                        <option value="less or equal" {% if condition.operator == 'less or equal' %}selected{% endif %}><=</option>
+                                    <select class="form-control operator"
+                                        id="operator-time-{{ loop.index }}-{{ loop.index }}"
+                                        name="operators[{{ loop.index }}][]">
+                                        <option value="greater" {% if condition.operator=='greater' %}selected{% endif
+                                            %}>></option>
+                                        <option value="less" {% if condition.operator=='less' %}selected{% endif %}>
+                                            << /option>
+                                        <option value="equal" {% if condition.operator=='equal' %}selected{% endif %}>=
+                                        </option>
+                                        <option value="greater or equal" {% if condition.operator=='greater or equal'
+                                            %}selected{% endif %}>>=</option>
+                                        <option value="less or equal" {% if condition.operator=='less or equal'
+                                            %}selected{% endif %}>
+                                            <=< /option>
                                     </select>
                                 </div>
                                 <div class="form-group flex-item time-dependent-condition" style="display: none;">
                                     <label for="value-time-{{ loop.index }}-{{ loop.index }}">Value:</label>
-                                    <input type="number" class="form-control comparison-value" id="value-time-{{ loop.index }}-{{ loop.index }}" name="comparison_time_values[{{ loop.index }}][]" value="{{ condition.comparison_time_value }}" step="0.01">
+                                    <input type="number" class="form-control comparison-value"
+                                        id="value-time-{{ loop.index }}-{{ loop.index }}"
+                                        name="comparison_time_values[{{ loop.index }}][]"
+                                        value="{{ condition.comparison_time_value }}" step="0.01">
                                 </div>
                                 <div class="form-group flex-item">
                                     <label for="unit-{{ loop.index }}-{{ loop.index }}">Unit:</label>
-                                    <select class="form-control unit" id="unit-{{ loop.index }}-{{ loop.index }}" name="units[{{ loop.index }}][]">
+                                    <select class="form-control unit" id="unit-{{ loop.index }}-{{ loop.index }}"
+                                        name="units[{{ loop.index }}][]">
                                         {% for unit in mappings[condition.parameter].units %}
-                                            <option value="{{ unit }}" {% if condition.unit == unit %}selected{% endif %}>{{ unit }}</option>
+                                        <option value="{{ unit }}" {% if condition.unit==unit %}selected{% endif %}>{{
+                                            unit }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                                 <div class="form-group flex-item">
                                     <label for="age-min-{{ loop.index }}-{{ loop.index }}">Age Range:</label>
-                                    <input type="number" class="form-control age-min" id="age-min-{{ loop.index }}-{{ loop.index }}" name="age_min[{{ loop.index }}][]" value="{{ condition.age_min }}" min="0" required>
+                                    <input type="number" class="form-control age-min"
+                                        id="age-min-{{ loop.index }}-{{ loop.index }}"
+                                        name="age_min[{{ loop.index }}][]" value="{{ condition.age_min }}" min="0"
+                                        required>
                                 </div>
                                 <div class="form-group flex-item">
                                     <label for="age-max-{{ loop.index }}-{{ loop.index }}">Age Range:</label>
-                                    <input type="number" class="form-control age-max" id="age-max-{{ loop.index }}-{{ loop.index }}" name="age_max[{{ loop.index }}][]" value="{{ condition.age_max }}" min="0" required>
+                                    <input type="number" class="form-control age-max"
+                                        id="age-max-{{ loop.index }}-{{ loop.index }}"
+                                        name="age_max[{{ loop.index }}][]" value="{{ condition.age_max }}" min="0"
+                                        required>
                                 </div>
                                 <div class="form-group flex-item">
                                     <label for="gender-{{ loop.index }}-{{ loop.index }}">Gender:</label>
-                                    <select class="form-control gender" id="gender-{{ loop.index }}-{{ loop.index }}" name="genders[{{ loop.index }}][]" required>
-                                        <option value="all" {% if condition.gender == 'all' %}selected{% endif %}>ALL</option>
-                                        <option value="male" {% if condition.gender == 'male' %}selected{% endif %}>Male</option>
-                                        <option value="female" {% if condition.gender == 'female' %}selected{% endif %}>Female</option>
+                                    <select class="form-control gender" id="gender-{{ loop.index }}-{{ loop.index }}"
+                                        name="genders[{{ loop.index }}][]" required>
+                                        <option value="all" {% if condition.gender=='all' %}selected{% endif %}>ALL
+                                        </option>
+                                        <option value="male" {% if condition.gender=='male' %}selected{% endif %}>Male
+                                        </option>
+                                        <option value="female" {% if condition.gender=='female' %}selected{% endif %}>
+                                            Female</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="center-buttons">
-                                <button type="button" class="btn btn-danger remove-condition" style="display: none;">Remove Condition</button>
+                                <button type="button" class="btn btn-danger remove-condition"
+                                    style="display: none;">Remove Condition</button>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
                     <div class="center-buttons">
-                        <button type="button" class="btn btn-primary add-condition" data-rule="{{ loop.index }}">Add Condition</button>
-                        <button type="button" class="btn btn-danger remove-rule" style="display: block;">Remove Rule</button>
+                        <button type="button" class="btn btn-primary add-condition" data-rule="{{ loop.index }}">Add
+                            Condition</button>
+                        <button type="button" class="btn btn-danger remove-rule" style="display: block;">Remove
+                            Rule</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -300,30 +377,52 @@
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     // Get all select elements with the class 'condition-type'
+        //     const selects = document.querySelectorAll('.condition-type');
+
+        //     selects.forEach(selectElement => {
+        //         // Get the condition type from the data attribute
+        //         const conditionType = selectElement.getAttribute('data-condition-type');
+        //         console.log(conditionType)
+        //         // Update the select option dynamically
+        //         if (conditionType === 'range') {
+        //             selectElement.value = 'range';
+        //         } else if (conditionType === 'comparison' || !conditionType) {
+        //             selectElement.value = 'comparison'; // Default to "Comparison Condition"
+        //         } else if (conditionType === 'time-dependent' || conditionType === 'timedependent') {
+        //             selectElement.value = 'time-dependent';
+        //         }
+        //     });
+        // });
+
+
+
         $(document).ready(function () {
 
             $(document).ready(function () {
-    // Initialize disease code dropdowns
-    $('.disease-name').each(function () {
-        const diseaseNameInput = $(this);
-        const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
-        populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
-    });
+                // Initialize disease code dropdowns
+                $('.disease-name').each(function () {
+                    const diseaseNameInput = $(this);
+                    const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
+                    populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
+                });
 
-    // Event listener for disease name input with debounce
-    $(document).on('input', '.disease-name', debounce(function () {
-        const diseaseNameInput = $(this);
-        const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
-        populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
-    }, 300));
-});
+                // Event listener for disease name input with debounce
+                $(document).on('input', '.disease-name', debounce(function () {
+                    const diseaseNameInput = $(this);
+                    const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
+                    populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
+                }, 300));
+            });
             let ruleCount = JSON.parse(document.getElementById('rule-count-data').textContent);
             let conditionCount = JSON.parse(document.getElementById('condition-count-data').textContent);
             let diseaseCodeCount = JSON.parse(document.getElementById('disease-code-count-data').textContent);
             let mappings = JSON.parse(document.getElementById('mappings-data').textContent);
             let icdMappings = JSON.parse(document.getElementById('icd-mappings-data').textContent);
-            
-                        function initializeParametersAndUnits() {
+
+            function initializeParametersAndUnits() {
                 $('.parameter').each(function () {
                     const parameterSelect = $(this);
                     const conditionGroup = parameterSelect.closest('.condition-group');
@@ -331,7 +430,7 @@
 
                     parameterSelect.empty();
                     const sortedKeys = Object.keys(mappings).sort();
-                    $.each(sortedKeys, function(index, key) {
+                    $.each(sortedKeys, function (index, key) {
                         parameterSelect.append($('<option>', {
                             value: key,
                             text: key,
@@ -344,7 +443,7 @@
                         const unitSelect = $(this).closest('.condition-group').find('.unit');
                         unitSelect.empty();
                         if (mappings[parameter] && mappings[parameter].units) {
-                            $.each(mappings[parameter].units, function(index, unit) {
+                            $.each(mappings[parameter].units, function (index, unit) {
                                 if (unit !== null) {
                                     unitSelect.append($('<option>', {
                                         value: unit,
@@ -359,7 +458,7 @@
                     const unitSelect = conditionGroup.find('.unit');
                     unitSelect.empty();
                     if (mappings[parameter] && mappings[parameter].units) {
-                        $.each(mappings[parameter].units, function(index, unit) {
+                        $.each(mappings[parameter].units, function (index, unit) {
                             if (unit !== null) {
                                 unitSelect.append($('<option>', {
                                     value: unit,
@@ -370,24 +469,24 @@
                     }
                 });
             }
-        
+
             function initializeParametersAndUnitsForNewCondition(ruleId, conditionId) {
                 const parameterSelect = $(`#parameter-${ruleId}-${conditionId}`);
                 parameterSelect.empty();
                 const sortedKeys = Object.keys(mappings).sort();
-                $.each(sortedKeys, function(index, key) {
+                $.each(sortedKeys, function (index, key) {
                     parameterSelect.append($('<option>', {
                         value: key,
                         text: key
                     }));
                 });
-        
+
                 parameterSelect.change(function () {
                     const parameter = $(this).val();
                     const unitSelect = $(this).closest('.condition-group').find('.unit');
                     unitSelect.empty();
                     if (mappings[parameter] && mappings[parameter].units) {
-                        $.each(mappings[parameter].units, function(index, unit) {
+                        $.each(mappings[parameter].units, function (index, unit) {
                             if (unit !== null) {
                                 unitSelect.append($('<option>', {
                                     value: unit,
@@ -398,8 +497,8 @@
                     }
                 });
             }
-        
-                        function toggleConditionFields(conditionRow, selectedType) {
+
+            function toggleConditionFields(conditionRow, selectedType) {
                 conditionRow.find('.range-condition').hide();
                 conditionRow.find('.comparison-condition').hide();
                 conditionRow.find('.time-dependent-condition').hide();
@@ -412,8 +511,8 @@
                     conditionRow.find('.time-dependent-condition').show();
                 }
             }
-        
-                        function initializeConditionFields() {
+
+            function initializeConditionFields() {
                 $('.condition-type').each(function () {
                     const conditionGroup = $(this).closest('.condition-group');
                     const selectedType = $(this).val();
@@ -427,7 +526,7 @@
                 });
             }
 
-        
+
             // Add new disease code
             $('#add-disease-code').click(function () {
                 diseaseCodeCount++;
@@ -451,7 +550,7 @@
                 $('#disease-codes').append(diseaseCodeHtml);
                 updateRemoveButtons();
             });
-        
+
             // Add new rule
             $('#add-rule').click(function () {
                 ruleCount++;
@@ -556,7 +655,7 @@
                 initializeConditionFields();
                 initializeParametersAndUnitsForNewCondition(ruleCount, 1);
             });
-        
+
             // Add new condition
             $(document).on('click', '.add-condition', function () {
                 const ruleId = $(this).data('rule');
@@ -652,7 +751,7 @@
                 initializeConditionFields();
                 initializeParametersAndUnitsForNewCondition(ruleId, conditionCount[ruleId]); // Attach event listeners to the new condition
             });
-        
+
             // Remove condition
             $(document).on('click', '.remove-condition', function () {
                 const conditionGroup = $(this).closest('.condition-group');
@@ -661,11 +760,11 @@
                 updateConditionNumbers(ruleId);
                 updateRemoveButtons();
             });
-        
+
             function updateConditionNumbers(ruleId) {
                 $(`#conditions-${ruleId} .condition-group`).each(function (index) {
                     const conditionNumber = index + 1;
-                    $(this).attr('id', `condition-${ruleId}-${conditionNumber}`);
+                    $(this).attr('id', `condition.type`);
                     $(this).find('h6').text(`Condition ${conditionNumber}`);
                     $(this).find('.condition-type').attr('id', `condition-type-${ruleId}-${conditionNumber}`);
                     $(this).find('.parameter').attr('id', `parameter-${ruleId}-${conditionNumber}`);
@@ -681,7 +780,7 @@
                 });
                 conditionCount[ruleId] = $(`#conditions-${ruleId} .condition-group`).length;
             }
-        
+
             // Remove rule
             $(document).on('click', '.remove-rule', function () {
                 const ruleGroup = $(this).closest('.rule-group');
@@ -691,7 +790,7 @@
                 updateRuleNumbers();
                 updateRemoveButtons();
             });
-        
+
             function updateRuleNumbers() {
                 $('.rule-group').each(function (index) {
                     const ruleNumber = index + 1;
@@ -704,13 +803,13 @@
                 });
                 ruleCount = $('.rule-group').length;
             }
-        
+
             // Remove disease code
             $(document).on('click', '.remove-disease-code', function () {
                 $(this).closest('.disease-code').remove();
                 updateRemoveButtons();
             });
-        
+
             function updateRemoveButtons() {
                 $('.remove-condition').each(function () {
                     if ($(this).closest('.conditions').find('.condition-group').length <= 1) {
@@ -719,7 +818,7 @@
                         $(this).show();
                     }
                 });
-        
+
                 $('.remove-rule').each(function () {
                     if ($(this).closest('#rules').find('.rule-group').length <= 1) {
                         $(this).hide();
@@ -727,7 +826,7 @@
                         $(this).show();
                     }
                 });
-        
+
                 $('.remove-disease-code').each(function () {
                     if ($(this).closest('#disease-codes').find('.disease-code').length <= 1) {
                         $(this).hide();
@@ -736,9 +835,9 @@
                     }
                 });
             }
-        
+
             // Function to populate disease code dropdown based on disease name
-                        function populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown) {
+            function populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown) {
                 const diseaseName = diseaseNameInput.val().trim().toLowerCase();
                 const diseaseCode = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown').val();
 
@@ -766,31 +865,31 @@
                     }));
                 }
             }
-        
+
             // Debounce function to limit the number of times the search function is called
             function debounce(func, wait) {
                 let timeout;
-                return function(...args) {
+                return function (...args) {
                     const context = this;
                     clearTimeout(timeout);
                     timeout = setTimeout(() => func.apply(context, args), wait);
                 };
             }
-        
+
             // Event listener for disease name input with debounce
             $(document).on('input', '.disease-name', debounce(function () {
                 const diseaseNameInput = $(this);
                 const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
                 populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
             }, 300));
-        
+
             // Initialize disease code dropdowns
             $('.disease-name').each(function () {
                 const diseaseNameInput = $(this);
                 const diseaseCodeDropdown = diseaseNameInput.closest('.disease-code').find('.disease-code-dropdown');
                 populateDiseaseCodeDropdown(diseaseNameInput, diseaseCodeDropdown);
             });
-        
+
             initializeConditionFields();
             initializeParametersAndUnits();
         });
@@ -845,4 +944,5 @@
         }
     </script>
 </body>
+
 </html>

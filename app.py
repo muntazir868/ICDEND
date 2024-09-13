@@ -111,10 +111,12 @@ def delete_rule(disease_code):
     """
     try:
         controller.rulebase_app.delete_rule(disease_code)
+        flash('Rule deleted successfully', 'success')  # Add this line to flash a success message
         return redirect(url_for('view_rulebase'))
     except Exception as e:
         app.logger.error(f"Error deleting rule: {e}")
         return jsonify({'status': 'error', 'message': str(e)}), 500
+    
 
 @app.route('/view_patient_data', methods=['GET', 'POST'])
 def view_patient_data():
@@ -136,9 +138,7 @@ def view_patient_data():
         
         # Fetch all patient data from the User_Input_Lab_Values collection
         patient_data = list(controller.lab_input_user_values_collection.find())
-        
-        # Sort patient data by patient ID
-        patient_data.sort(key=lambda x: x['patient_id'])
+
 
         return render_template('view_patient_data.html', patient_data=patient_data)
     except Exception as e:
@@ -149,10 +149,10 @@ def view_patient_data():
 def edit_rule(rule_id):
     rule = controller.rulebase_app.get_rule_by_id(rule_id)
     if rule:
+        print("here", rule.rules)
         # Fetch mappings JSON for GET request -- these are the mappings for the ICD names and their codes
         mappings_path = os.path.join(app.root_path, 'static', 'mappings.json')
         icd_mappings_path = os.path.join(app.root_path, 'static', 'sortedIcdMappings.json')
-        print(rule)
 
         with open(mappings_path, 'r') as mappings_file:
             mappings = json.load(mappings_file)
@@ -160,6 +160,9 @@ def edit_rule(rule_id):
         with open(icd_mappings_path, 'r') as icd_mappings_file:
             icd_mappings = json.load(icd_mappings_file)
         
+        
+            
+
         return render_template('edit_rule.html', rule=rule, mappings=mappings, icd_mappings=icd_mappings)
     else:
         flash('Rule not found', 'error')

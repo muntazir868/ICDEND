@@ -78,7 +78,7 @@ class RuleEntry:
             'conditions': [condition.to_dict() for condition in self.conditions]
         }
 
-    @staticmethod
+    
     def from_dict(rule_entry_data):
         """
         Create a RuleEntry instance from a dictionary.
