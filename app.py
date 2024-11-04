@@ -4,7 +4,7 @@ from databasemanager import DatabaseManager
 from rulebaseapp import RulebaseApp
 import os
 import json
-from config import mongodb_link, secret_key, lab_values_collection, rules_data_collection
+from config import mongodb_link, secret_key, lab_values_collection
 
 
 # Configure logging
